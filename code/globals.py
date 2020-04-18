@@ -16,6 +16,7 @@ starting_health = 10
 starting_lives = 3
 half_board_size = 4 # (n_spaces = 2 * half_board_size + 1)
 mana_cap = 10**3
+USE_DECK_STATS = False  # Note: this is only partially implemented when turned on currently.
 
 # For Handicap
 scale = 20 # Handicap per card

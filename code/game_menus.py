@@ -353,11 +353,12 @@ class DeckBuilder(Page):
             stat_cards.sort(key=lambda x: x.name)
             star_cards = [c for c in self.decks[0].contents if 'Star' in c.special and c.type != 'Stats']
             other_cards = [c for c in self.decks[0].contents if c not in (stat_cards + star_cards)]
+            stat_card_display = [self.stats_label] + stat_cards if USE_DECK_STATS else []
 
             # Update deck display
             self.deck_summary.sprites = (
                 [self.decks[0]] +
-                [self.stats_label] + stat_cards +
+                stat_card_display +
                 [self.star_label] + star_cards +
                 [self.deck_label] + other_cards
             )
