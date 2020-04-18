@@ -267,7 +267,7 @@ class DeckBuilder(Page):
                                 self.decks[0].card_names = []
                         elif c.name == 'Cancel Changes':
                             # Reload current deck
-                            pass
+                            self.host.set_deck(id=self.decks[0].id, position=0)
                         elif c.name == 'Delete Deck':
                             self.host.chosen_values['Decks'][0].save(delete=True)
                             self.host.chosen_values['Decks'][0] = get_recent_decks()[-1]
