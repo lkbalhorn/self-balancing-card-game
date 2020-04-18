@@ -1,5 +1,6 @@
 from window import *
 from game_menus import *
+# Now I'm writing this in polish... I think
 
 def main():
     with Window(1500, 800, "Razor's Edge") as window:
