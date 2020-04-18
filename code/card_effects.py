@@ -591,7 +591,7 @@ class ReduceDurations(Card):
         return new_basic_actions
 
 
-class LoseLife(Card):
+class CheckHeroDeath(Card):
     def get_reaction(self, basic_action):
         if basic_action.__class__.__name__ == 'DealDamage':
             if basic_action.target.name == 'Hero':
@@ -626,7 +626,7 @@ class QuickenAll(Card):
 
 # standard_reactions = [RampageReaction(), CheckDeath(), ChargeReaction(), StarReaction(), QuickenAll()]
 rule_cards = [RampageKeyword(), ChargeKeyword(), StarKeyword(), ReduceDurations(), ImmuneKeyword(),
-              CheckDeath(), LoseLife()]
+              CheckDeath(), CheckHeroDeath()]
 
 
 # Archetype Cards ----------------------------------------------------------------------------- Archetype Cards

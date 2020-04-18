@@ -372,6 +372,8 @@ class Hero(Card):
             self.location = player.board
         self.resize()
 
+        self.key_traits.append('stock')
+
     # def draw_image(self, artwork=False, template=False):
         # self.text = str(self.health)
     #     return Sprite.draw_image(self, artwork, template)
