@@ -118,7 +118,14 @@ class GameScreen(Page):
         self.center_box = Group('table', self, [high_table, center_box, low_table], 0, 0.5, 0, 0.5, 1, 0.5, center=0, spacing=0)
 
         # Create Center Message Board
-        self.message_board = Sprite(w=500, h=400, fill=False, border=False, color=(0, 0, 0), fontsize=100, alpha=0, font_color=(200, 50, 50))
+        self.main_message = Sprite(w=500, h=200, fill=False, border=False, color=(150, 150, 200), fontsize=100,
+                                    font_color=(50, 50, 150))
+        self.victory_message = Sprite(w=800, h=400, fill=False, border=False, color=(150, 200, 150), fontsize=300,
+                                    font_color=(50, 150, 50), text='Victory!', layer=10)
+        self.defeat_message = Sprite(w=800, h=400, fill=False, border=False, color=(200, 150, 150), fontsize=300,
+                                    font_color=(150, 50, 50), text='Defeat!', layer=10)
+        self.messages = Group('messages', self, [], 0, 0.5, 0, 0.5, 1, 0.5, center=0, spacing=300)
+
 
         # Create left side widgets
 
@@ -339,6 +346,15 @@ class GameScreen(Page):
                 else:
                     self.next_turn.text = "Opponent's Turn"
 
+            # Update Message Board
+            if self.current_snapshot.players[0].result is not None:
+                if self.current_snapshot.players[0].result == 1:
+                    self.messages.sprites = [self.defeat_message, self.victory_message]
+                else:
+                    self.messages.sprites = [self.victory_message, self.defeat_message]
+                if not self.local_game:
+                    # Only show message for Player 1
+                    self.messages.sprites = self.messages.sprites[:1]
 
     def manage_targets(self, events, hovered_sprites):
         hovered_sprites.sort(key=lambda x: x.layer, reverse=True)

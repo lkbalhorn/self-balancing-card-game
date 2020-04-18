@@ -28,7 +28,7 @@ class Player(Sprite):
             self.__dict__[name] = Location(type=name, player=self)
         self.key_traits = self.location_names + ['mana', 'income', 'targets', 'handicap',
                                                  'start_cards', 'negative_cards',
-                                                 'opponent', 'is_active', 'result', 'surrender',
+                                                 'opponent', 'is_active', 'result', 'surrender', 'result',
                                                  'locations', 'hero']
 
         self.mana = 0
