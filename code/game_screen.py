@@ -121,9 +121,9 @@ class GameScreen(Page):
         self.main_message = Sprite(w=500, h=200, fill=False, border=False, color=(150, 150, 200), fontsize=100,
                                     font_color=(50, 50, 150))
         self.victory_message = Sprite(w=800, h=400, fill=False, border=False, color=(150, 200, 150), fontsize=300,
-                                    font_color=(50, 150, 50), text='Victory!', layer=10)
+                                    font_color=(50, 150, 50), text='Victory!', layer=10, check_highlight=False)
         self.defeat_message = Sprite(w=800, h=400, fill=False, border=False, color=(200, 150, 150), fontsize=300,
-                                    font_color=(150, 50, 50), text='Defeat!', layer=10)
+                                    font_color=(150, 50, 50), text='Defeat!', layer=10, check_highlight=False)
         self.messages = Group('messages', self, [], 0, 0.5, 0, 0.5, 1, 0.5, center=0, spacing=300)
 
 
