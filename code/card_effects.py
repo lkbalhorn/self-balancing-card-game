@@ -615,6 +615,18 @@ class CheckHeroDeath(Card):
             self.aura_list = []
 
 
+class CheckVictory(Card):
+    def get_reaction(self, basic_action):
+        if basic_action.__class__.__name__ == 'ChangeStock':
+            if basic_action.target.stock + basic_action.amount <= 0:
+                return Reaction(self, basic_action.target.player)
+
+    def reaction(self, target, trigger):
+        # Target player is defeated!
+        target.result = 0
+        target.opponent.result = 1
+
+
 class QuickenAll(Card):
     def get_reaction(self, basic_action):
         if basic_action.__class__.__name__ == 'StartTurn' and basic_action.extras['turn'] > 0:
@@ -626,7 +638,7 @@ class QuickenAll(Card):
 
 # standard_reactions = [RampageReaction(), CheckDeath(), ChargeReaction(), StarReaction(), QuickenAll()]
 rule_cards = [RampageKeyword(), ChargeKeyword(), StarKeyword(), ReduceDurations(), ImmuneKeyword(),
-              CheckDeath(), CheckHeroDeath()]
+              CheckDeath(), CheckHeroDeath(), CheckVictory()]
 
 
 # Archetype Cards ----------------------------------------------------------------------------- Archetype Cards

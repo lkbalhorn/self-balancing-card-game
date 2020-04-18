@@ -4234,3 +4234,16 @@
 2020-04-18 15:10:59,426 - INFO - RazorsEdge - Program Closed 
 
 
+2020-04-18 15:19:11,289 - INFO - game - New Game Created
+2020-04-18 15:19:11,290 - INFO - game - Game Setup Complete
+2020-04-18 15:19:14,628 - INFO - game_screen - StaticArc(tableau(P2744)) Activated
+2020-04-18 15:19:17,066 - INFO - game_screen - StaticArc(tableau(P2744)) Activated
+2020-04-18 15:19:41,240 - INFO - game - New Game Created
+2020-04-18 15:19:41,241 - INFO - game - Game Setup Complete
+2020-04-18 15:19:44,809 - INFO - game_screen - StaticArc(tableau(P8408)) Activated
+2020-04-18 15:19:46,549 - INFO - game_screen - StaticArc(tableau(P8408)) Activated
+2020-04-18 15:19:49,107 - INFO - game_screen - StaticArc(tableau(P8408)) Activated
+2020-04-18 15:19:51,137 - INFO - game_screen - StaticArc(tableau(P8408)) Activated
+2020-04-18 15:19:56,707 - INFO - RazorsEdge - Program Closed 
+
+
