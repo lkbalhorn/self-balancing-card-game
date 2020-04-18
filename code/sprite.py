@@ -96,9 +96,8 @@ class Sprite:
                 new_image.set_alpha(self.alpha)
         else:
             # Set transparent middle
-            black = (0, 0, 0)
-            new_image.fill(black)
-            new_image.set_colorkey(black)
+            new_image.fill(self.color)
+            new_image.set_colorkey(self.color)
 
         # Add Artwork
         if artwork:
@@ -477,7 +476,8 @@ def distribute(items, dimension, low=0, center=0, high=0, spacing=10, fixed_size
     else:
         # Assume center=0, spacing=10
         # pass
-        raise 'Distribute requires two nonzero keyword arguments'
+        print('Distribute requires two nonzero keyword arguments')
+        raise
 
     # Assign positions
     current_pos = low  # must be tracked because items can be of different sizes
