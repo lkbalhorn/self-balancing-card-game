@@ -60,6 +60,9 @@ class MainMenu(Menu):
                         game.is_local = True
                         self.set_page(self.game_screen.name, come_back=True)
                         self.game_screen.local_game = game
+                    elif h.name == 'Exit':
+                        self.window.carry_on = False
+
 
         # Update Sprite Text for Choices
         for h in self.current_page.view():
