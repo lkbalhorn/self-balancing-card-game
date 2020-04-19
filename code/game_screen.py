@@ -3,7 +3,6 @@ from gameboard import *
 from game import *
 import time
 import json
-# from globals import *
 
 
 class WebPlayer(Sprite):

@@ -1,5 +1,6 @@
 # Import Classes
-from LkGUI import *
+import pygame
+from pygame.locals import *
 from collections import namedtuple
 
 

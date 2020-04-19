@@ -1,5 +1,4 @@
 import pygame, random
-from LkGUI import *
 from card_effects import *
 import time
 from globals import *
