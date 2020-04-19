@@ -2,7 +2,6 @@ import pygame
 pygame.init()
 import os
 import logging
-from extras import *
 import xlrd
 
 # Mutable Globals (Sometimes changed during operation):
