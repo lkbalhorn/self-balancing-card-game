@@ -5,7 +5,6 @@ from aiohttp import web
 import socket
 from netifaces import interfaces, ifaddresses, AF_INET
 
-import settings
 import game as gm
 import time
 

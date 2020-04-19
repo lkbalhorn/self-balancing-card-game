@@ -2,7 +2,6 @@ import pygame, random
 from card_effects import *
 import time
 from globals import *
-from settings import *
 from sprite import *
 import csv
 import json
