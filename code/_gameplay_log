@@ -4301,3 +4301,12 @@
 2020-04-18 16:43:14,631 - INFO - RazorsEdge - Program Closed 
 
 
+2020-04-18 23:06:17,431 - INFO - game - New Game Created
+2020-04-18 23:06:17,432 - INFO - game - Game Setup Complete
+2020-04-18 23:06:20,917 - INFO - game_screen - StaticArc(tableau(P2544)) Activated
+2020-04-18 23:06:22,749 - INFO - game_screen - StaticArc(tableau(P2544)) Activated
+2020-04-18 23:06:24,696 - INFO - game_screen - StaticArc(tableau(P2544)) Activated
+2020-04-18 23:06:26,539 - INFO - game_screen - StaticArc(tableau(P2544)) Activated
+2020-04-18 23:06:28,565 - INFO - RazorsEdge - Program Closed 
+
+
