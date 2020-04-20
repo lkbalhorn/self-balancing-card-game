@@ -92,6 +92,7 @@ class Card(Sprite):
         # Set up out-of-game variables
         self.quantity = 1
         self.summary = False
+        self.set = 0
 
 
     def __repr__(self):
@@ -580,6 +581,7 @@ def sanitize_card_library(raw_card_dictionary):
             'starting_tags':    data['Tags'].split(' ') if data['Tags'] != '' else [],
             'n_hand_targets':   int(data['HandTargets']) if data['HandTargets'] != '' else 0,
             'n_board_targets':  int(data['BoardTargets']) if data['BoardTargets'] != '' else 0,
+            'set':              int(data['Set']) if data['Set'] else 5,
             'filename':         data['Filename'],
             'include':          True if data['Include'] == 'Yes' else False
         }
