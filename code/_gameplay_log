@@ -4325,3 +4325,17 @@
 2020-04-18 23:21:38,983 - INFO - RazorsEdge - Program Closed 
 
 
+2020-04-19 22:06:19,285 - INFO - game - New Game Created
+2020-04-19 22:06:19,286 - INFO - game - Game Setup Complete
+2020-04-19 22:06:24,800 - INFO - game_screen - IceWall(hand(P6392)) Activated
+2020-04-19 22:06:58,741 - INFO - RazorsEdge - Program Closed 
+
+
+2020-04-19 22:08:42,555 - INFO - game - New Game Created
+2020-04-19 22:08:42,556 - INFO - game - Game Setup Complete
+2020-04-19 22:08:46,708 - INFO - game_screen - MinorIllusion(tableau(P8568)) Activated
+2020-04-19 22:08:51,478 - INFO - game_screen - Lunge(tableau(P8736)) Activated
+2020-04-19 22:08:52,528 - INFO - game_screen - False(board(P8736)) Activated
+2020-04-19 22:09:19,576 - INFO - RazorsEdge - Program Closed 
+
+

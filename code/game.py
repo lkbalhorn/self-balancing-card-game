@@ -115,7 +115,7 @@ class Game:
             # p.deck = decks[i]
             new_deck = decks[i]
             card_names = new_deck.card_names if hasattr(new_deck, 'card_names') else new_deck
-            for name in (card_names + ['Sprint', 'Rest']):
+            for name in card_names:
                 new = load_card(name, p)
                 p.deck.append(new)
                 new.location = p.deck
