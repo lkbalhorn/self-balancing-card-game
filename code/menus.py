@@ -80,7 +80,10 @@ class Page:
         self.button_click_animation(events, hovered_ids, pos, mouse)
         self.process_text_boxes(events, hovered_sprites)
         self.host.special_inputs(events, hovered_ids, pos, mouse)
-        # This will be frequently overwritten when subclassing
+        self.special_inputs(events, hovered_ids, pos, mouse)
+
+    def special_inputs(self, events, hovered_ids, pos, mouse):
+        pass
 
     def play_snapshots(self, loop):
         pass

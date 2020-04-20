@@ -121,13 +121,8 @@ class DeckChooser(Page):
             new = Deck(data=data)
             self.all_decks.append(new)
 
-    def process_inputs(self, events, hovered_ids, pos, mouse):
+    def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
-        self.host.navigate(events, hovered_ids)
-        self.button_click_animation(events, hovered_ids, pos, mouse)
-        self.process_text_boxes(events, hovered_sprites)
-        self.host.special_inputs(events, hovered_ids, pos, mouse)
-
 
         for e in events:
             if e.type == 6: # Unclick
@@ -228,12 +223,8 @@ class DeckBuilder(Page):
             self.color_groups[key].sort(key=lambda x: x.name)
             self.color_groups[key].sort(key=lambda x: x.cost)
 
-    def process_inputs(self, events, hovered_ids, pos, mouse):
+    def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
-        self.host.navigate(events, hovered_ids)
-        self.button_click_animation(events, hovered_ids, pos, mouse)
-        self.process_text_boxes(events, hovered_sprites)
-        self.host.special_inputs(events, hovered_ids, pos, mouse)
         self.decks[0].is_text_box = True
         global deck_dicitonary
 

@@ -169,12 +169,8 @@ class GameScreen(Page):
         self.skew_rel_mouse[self.crosshair.id] = (-0.5, -0.5)
         Group('misc', self, [self.crosshair], 0, -100, 0, 0, 1, 0.5, center=-100, spacing=0)
 
-    def process_inputs(self, events, hovered_ids, pos, mouse):
+    def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
-        self.host.navigate(events, hovered_ids)
-        self.button_click_animation(events, hovered_ids, pos, mouse)
-        self.process_text_boxes(events, hovered_sprites)
-        self.host.special_inputs(events, hovered_ids, pos, mouse)
         self.manage_drag(events, hovered_sprites, pos, mouse)
         self.manage_hover(events, hovered_sprites, pos, mouse)
         if self.local_game or self.local_player == self.active_player:
