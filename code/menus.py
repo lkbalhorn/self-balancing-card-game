@@ -15,8 +15,8 @@ class Menu:
         self.window = window
         self.server = '127.00.00.01'
         self.screen_name = 'Player 1'
-
         self.client = Client(self)
+        self.dev_settings = []
 
     def get_current_page(self):
         return self.current_page
@@ -81,6 +81,13 @@ class Page:
         self.process_text_boxes(events, hovered_sprites)
         self.host.special_inputs(events, hovered_ids, pos, mouse)
         self.special_inputs(events, hovered_ids, pos, mouse)
+
+        # Check hotkeys for devtools settings
+        for e in events:
+            if e.type == pygame.KEYDOWN:
+                if e.mod == pygame.KMOD_LCTRL or e.mod == pygame.KMOD_RCTRL:  # Either control key is held, or both
+                    if e.key == pygame.K_a:
+                        print('a')
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
         pass
