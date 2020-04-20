@@ -125,12 +125,6 @@ class Card(Sprite):
             new.__dict__[attr] = simple_dict[attr]
         return new
 
-    def load_artwork(self):
-        if self.filename != '':
-            return FadeImage(self.filename, 1500, 932)
-        else:
-            return False
-
     def resize(self):
         # Good way to put all of the size data in one place, and other size-change factors
         if self.size == 'small':
