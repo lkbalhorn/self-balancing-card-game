@@ -156,6 +156,7 @@ class DeckBuilder(Page):
         self.current_mode = 'idle'
         self.loop_counter = 0
         self.decks = self.host.chosen_values['Decks']
+        self.set = 2  # Cards at or below set 2 are visible in the DeckBuilder
 
         # Create Card Objects
         cards = []
@@ -184,7 +185,7 @@ class DeckBuilder(Page):
         self.color_list = self.color_list + ['Neutral']
         for g in self.color_list:
             self.color_groups[g] = [c for c in cards if c.color_name == g]
-        self.sort_color_groups()
+        # self.sort_color_groups()
 
         # Set up card pages
         self.top_row = Group('top_row', self, [], 1, 0.5, -50, 1, 0, 0.5, center=-60, spacing=10)
@@ -217,7 +218,8 @@ class DeckBuilder(Page):
         self.star_label = Sprite(w=300, h=45, text='Head Start', font_size=30)
         self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
 
-    def sort_color_groups(self):
+    def sort_display_cards(self):
+        #
         # Sort Cards by Mana Cost first, Name second
         for key in self.color_groups:
             self.color_groups[key].sort(key=lambda x: x.name)
@@ -297,7 +299,7 @@ class DeckBuilder(Page):
                         data = card_dictionary[c.name]
                         for attr in data:
                             c.__dict__[attr] = data[attr]
-                self.sort_color_groups()
+                self.sort_display_cards()
         except PermissionError:
             pass
 

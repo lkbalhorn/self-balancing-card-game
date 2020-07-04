@@ -9,8 +9,14 @@ class Window:
     # Does all the stuff you want done automatically in a visual presentation
     def __init__(self, w, h, title):
         # Set up visual display
-        for m in get_monitors():
-            w, h = m.width, m.height - 40
+
+        try:
+            for m in get_monitors():
+                w, h = m.width, m.height - 40
+        except Exception as e:
+            w = 1000
+            h = 800
+
         self.w = w
         self.h = h
         self.xc = self.w / 2
