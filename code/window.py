@@ -9,7 +9,6 @@ class Window:
     # Does all the stuff you want done automatically in a visual presentation
     def __init__(self, w, h, title):
         # Set up visual display
-
         try:
             for m in get_monitors():
                 w, h = m.width, m.height - 40
@@ -21,7 +20,7 @@ class Window:
         self.h = h
         self.xc = self.w / 2
         self.yc = self.h / 2 - 25
-        # for m in get_monitors():
+
         os.environ['SDL_VIDEO_CENTERED'] = '1'  # You have to call this before pygame.init()
         pygame.init()
         self.screen = pygame.display.set_mode((self.w, self.h), pygame.RESIZABLE)
