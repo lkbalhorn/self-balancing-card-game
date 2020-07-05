@@ -14,7 +14,7 @@ class Window:
             for m in get_monitors():
                 w, h = m.width, m.height - 40
         except Exception as e:
-            w = 1000
+            w = 1550
             h = 800
 
         self.w = w
