@@ -397,7 +397,8 @@ class GameLobby(Page):
         play_right.sprites = [self.name_choice, self.server_choice, deck_choice]
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
-        hovered_sprites = [i for i in self.current_page.view() if i.id in hovered_ids]
+        pass
+        # hovered_sprites = [i for i in self.current_page.view() if i.id in hovered_ids]
 
     def enter(self, source):
         # Connect to Server
