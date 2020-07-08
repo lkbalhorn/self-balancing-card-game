@@ -106,7 +106,6 @@ class Client:
         reply_message = False
         if not server:
             server = self.server
-        print(server)
         # Check legal ip address
         if len(server.split('.')) < 4:
             return False
