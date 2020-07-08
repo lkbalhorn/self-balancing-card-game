@@ -11,8 +11,8 @@ import xlrd
 # Immutable Globals (Never changed during operation):
 
 # Game Rules
-starting_health = 2
-starting_lives = 2
+starting_health = 20
+starting_lives = 1
 half_board_size = 4 # (n_spaces = 2 * half_board_size + 1)
 mana_cap = 10**3
 USE_DECK_STATS = False  # Note: this is only partially implemented when turned on currently.
