@@ -181,3 +181,12 @@ if __name__ == "__main__":
     loop.close()
 
 
+    """
+    Look at aiohttp:
+    multipart
+    request library
+    Restful interfaces - check Wikipedia
+    check https://stanford.zoom.us/j/974984604 from Chris
+    """
+
+
