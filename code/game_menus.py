@@ -45,7 +45,7 @@ class MainMenu(Menu):
     def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_items = [i for i in self.current_page.view() if i.id in hovered_ids]
         for e in events:
-            if e.type == 6:  # Unclick
+            if e.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for h in hovered_items:
                     if h.name in ['Choose Player 1 Deck', 'deck_choice']:
                         self.set_page(self.deck_chooser.name, come_back=True)
@@ -125,7 +125,7 @@ class DeckChooser(Page):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
 
         for e in events:
-            if e.type == 6: # Unclick
+            if e.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for h in hovered_sprites:
                     if h in self.tab_headings.sprites:
                         # Toggle active page
@@ -243,7 +243,7 @@ class DeckBuilder(Page):
                 max_x_pages = len(self.color_groups[self.color_list[self.y_page]][::10]) - 1
                 if self.x_page > max_x_pages:
                     self.x_page = max_x_pages
-            if e.type == 6: # Unclick
+            if e.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for c in hovered_sprites:
                     if c.name == 'New Deck':
                         # First save current deck

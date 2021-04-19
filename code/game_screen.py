@@ -378,7 +378,7 @@ class GameScreen(Page):
                     return
 
         for event in events:
-            if event.type == 5:  # Click
+            if event.type == pygame.MOUSEBUTTONDOWN:  # Click
                 # Check activate or target
                 for c in hovered_sprites:
                     if c.status == 'available' and not self.active_card:
@@ -402,8 +402,7 @@ class GameScreen(Page):
                     #     self.active_card = False
                     #     self.active_player.targets = []
 
-
-            if event.type == 6:  # Unclick
+            if event.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for c in hovered_sprites:
                     # Ignore friendly Hero object if it's not the only object clicked
                     # if self.active_player and self.active_player.hero and c == self.active_player.hero and len(hovered_sprites) > 1:
@@ -459,7 +458,7 @@ class GameScreen(Page):
 
     def check_next_turn(self, events, hovered_sprites):
         for event in events:
-            if event.type == 6:  # Unclick
+            if event.type == pygame.MOUSEBUTTONUP:  # Un-click
                 if [c for c in hovered_sprites if c.name == 'Next Turn']:
                     if self.local_game:
                         self.player_actions.append(NextTurn(source=self.active_player, turn=self.turn))

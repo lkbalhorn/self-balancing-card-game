@@ -32,9 +32,8 @@ class Menu:
 
     def navigate(self, events, hovered_ids):
         for e in events:
-            if e.type == 6:  # Unclick
+            if e.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for v in [i for i in self.current_page.view() if i.id in hovered_ids]:
-
                     if v.name == 'Back':
                         self.set_page(self.current_page.parent)
                     elif v.type == 'link':
