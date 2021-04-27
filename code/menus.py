@@ -3,7 +3,7 @@ from sprite import *
 from globals import *
 from client import *
 
-Group = namedtuple('Group', ('name', 'page', 'sprites', 'x', 'x_ref', 'y', 'y_ref', 'dim', 'spacing', 'skew'))
+# Group = namedtuple('Group', ('name', 'page', 'sprites', 'x', 'x_ref', 'y', 'y_ref', 'dim', 'spacing', 'skew'))
 # x_ref anda y_ref should range from 0 to 1, where 1 is the right side of the screen
 
 
