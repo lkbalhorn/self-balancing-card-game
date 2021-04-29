@@ -5,6 +5,7 @@ import time  # For troubleshooting performance
 import os
 import json
 
+
 class Card(Sprite):
     # This class represents a card, whether in the deck, in a hand, on the board, or
     # discarded

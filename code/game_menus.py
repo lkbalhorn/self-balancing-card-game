@@ -72,13 +72,12 @@ class MainMenu(Menu):
                 h.text = self.chosen_values['Decks'][1].name
 
     def set_deck(self, id=False, position=0):
+        id = str(id)  # I thought id values were supposed to be str - look into this
         if id and id in deck_dictionary:
             deck_data = deck_dictionary[id]
             deck = Deck(data=deck_data)
-            print('loaded from id')
         else:
             deck = get_recent_decks()[position]
-            print('loaded from recent decks')
         self.chosen_values['Decks'][position] = deck
 
 
