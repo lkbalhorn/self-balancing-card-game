@@ -1,9 +1,12 @@
-import pygame, random
-from sprite import *
-from globals import *
+import random
 import time  # For troubleshooting performance
 import os
 import json
+
+import pygame
+
+from sprite import *
+from globals import *
 
 
 class Card(Sprite):
