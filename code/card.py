@@ -47,7 +47,6 @@ class Card(Sprite):
         self.active_locations = []
         self.duration = 0
 
-
         self.starting_cost = None
         self.starting_ability_cost = None
         self.starting_attack = 0
@@ -61,6 +60,7 @@ class Card(Sprite):
         self.is_revealed = False
         self.is_hidden = True
         self.layer = 1
+        self.check_hover = False
 
         self.is_alive = True
         self.last_hit = False
@@ -97,7 +97,6 @@ class Card(Sprite):
         self.quantity = 1
         self.summary = False
         self.set = 0
-
 
     def __repr__(self):
         return '%s(%s)' % (self.long_name, self.location)
@@ -149,7 +148,6 @@ class Card(Sprite):
             self.w, self.h = 140, 200
             self.check_hover = False
 
-
     def draw_image(self, artwork=False, template=False, extras=[]):
         tic = time.time()
 
@@ -183,8 +181,6 @@ class Card(Sprite):
             pygame.draw.rect(new_image, (100, 0, 75), (0, 0, self.w, self.h), 7)
             return new_image, None
 
-
-
         f = self.w**0.5/8  # Attempt at smooth scaling using square root
 
         card_art = artwork
@@ -213,7 +209,6 @@ class Card(Sprite):
                 new_image.blit(scaled_art, (-15, 0))
         else:
             pygame.draw.rect(new_image, self.color, [0, 0, self.w, self.h])
-
 
         # Choose items to draw and blit templates
         if self.size == 'big':
@@ -322,8 +317,6 @@ class Card(Sprite):
                 for i, s in enumerate(self.subsprites):
                     new_image.blit(extras[i], (s.x, s.y), area=(1, 1, 1000, 1000))
 
-
-
         # Draw Status Outline
         if self.is_target:
             color = (255, 50, 50)
@@ -342,8 +335,6 @@ class Card(Sprite):
         else:
             line_w = 7
         pygame.draw.rect(new_image, color, (0, 0, self.w, self.h), line_w)
-
-
 
         return new_image, None
 
@@ -584,6 +575,7 @@ def sanitize_card_library(raw_card_dictionary):
             'include':          True if data['Include'] == 'Yes' else False
         }
     return card_dictionary
+
 
 # card_dictionary is a mutable global variable
 card_dictionary = import_card_library()
