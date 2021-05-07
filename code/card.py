@@ -291,7 +291,6 @@ class Card(Sprite):
             adjust = len(ability_cost)
             new_image.blit(ability_cost_label, (self.w / 2 - adjust * 5, self.h - length - 12))
 
-
         # Draw Name Plate
         if 'name' in items:
             line_color = (self.color[0] / 2, self.color[1] / 2, self.color[2] / 2)
