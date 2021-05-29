@@ -275,8 +275,6 @@ class Ellipse(Sprite):
         # Set Colorkey
         if self.colorkey:
             new_image.set_colorkey(self.colorkey)
-
-
         return new_image, None
 
     def decorate(self, screen):
@@ -311,7 +309,6 @@ class Ellipse(Sprite):
             if self.y <= y <= self.y + self.h:
                 return True
         return False
-
 
 
 def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
@@ -362,7 +359,6 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
             if fontsize < 5:
                 return False  # Text wrapping fails
 
-
     # Set word positions based on alignment, then blit them to surface
     for i, line in enumerate(lines):
         current_line_width = sum([pygame.Surface.get_width(p) for p in line])
@@ -394,6 +390,7 @@ def align(items, dimension, value, skew=0.5):
                 i.x_target = value - i.w * skew
             elif dimension == 1:  # y values
                 i.y_target = value - i.h * skew
+
 
 def distribute(items, dimension, low=0, center=0, high=0, spacing=10, fixed_size = False):
 
@@ -455,8 +452,8 @@ def distribute(items, dimension, low=0, center=0, high=0, spacing=10, fixed_size
                 current_pos += (spacing + i.h)
 
 
-def shade(color, shade_fraction = 0.5, shade_color = (0,0,0)):
+def shade(color, shade_fraction=0.5, shade_color=(0, 0, 0)):
     red = int(shade_color[0]*shade_fraction + color[0]*(1-shade_fraction))
     green = int(shade_color[1]*shade_fraction + color[1] * (1-shade_fraction))
     blue = int(shade_color[2]*shade_fraction + color[2] * (1-shade_fraction))
-    return (red, green, blue)
+    return red, green, blue
