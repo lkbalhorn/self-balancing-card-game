@@ -29,7 +29,7 @@ class Window:
         self.background_w = 1500
         self.background_h = 960
 
-        self.sprite_images = {}  # Images stored by object ID allow sprites to be pickled and sent
+        self.sprite_images = {}  # Images stored by object ID allow sprites to be serialized and sent
         self.sprite_templates = {}
         self.sprite_artwork = {}
         self.sprite_traits = {}  # Stores key data by id number to determine if sprites need to be updated
@@ -95,17 +95,12 @@ class Window:
                 self.last_motion = (time.time(), pos, event.rel, event.buttons)
             self.last_pos = pos
 
-    def draw_background(self, *args):
-        # Each arg should be a tuple of filename and alpha
+    def draw_background(self, filename):
         self.screen.fill((0, 0, 0))
-
-        for tup in args:
-            filename, alpha = tup
-            image = self.load_artwork(filename, screen_size=True)  # Keeps archived, so the file is only loaded once
-            if image:
-                x, y = self.xc - image.get_width() / 2, 0
-                image.set_alpha(alpha)
-                self.screen.blit(image, (x, y))
+        image = self.load_artwork(filename, screen_size=True)  # Keeps archived, so the file is only loaded once
+        if image:
+            x, y = self.xc - image.get_width() / 2, 0
+            self.screen.blit(image, (x, y))
 
     def draw_sprites(self, view):
         layered_sprites = sorted(view, key=lambda x: x.layer)
