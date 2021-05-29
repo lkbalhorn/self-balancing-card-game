@@ -1,8 +1,9 @@
-import pygame
+import pygame as pg
+from typing import Optional
 
 
 class Sprite:
-    # This is my own sprite class, not related to the Pygame sprite class
+    # This is my own sprite class, not related to the pygame sprite class
     def __init__(self, **kwargs):
         # Create permanent ID
         self.id = str(id(self))
@@ -78,9 +79,9 @@ class Sprite:
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
 
-    def draw_image(self, artwork=False, template=False):
+    def draw_image(self, artwork: Optional[pg.Surface] = None, template=False):
         # Create image surface
-        new_image = pygame.Surface([self.w, self.h])
+        new_image = pg.Surface([self.w, self.h])
 
         # Fill Box
         if self.fill:
@@ -95,20 +96,20 @@ class Sprite:
 
         # Add Artwork
         if artwork:
-            scaled_art = pygame.transform.scale(artwork, (self.w, self.h))
+            scaled_art = pg.transform.scale(artwork, (self.w, self.h))
             new_image.blit(scaled_art, (0, 0))
 
         # Draw Outline
         if self.border > 0 and not self.fill:
             # Use true color for outline
-            pygame.draw.rect(new_image, self.color, [0, 0, self.w, self.h], self.border)
+            pg.draw.rect(new_image, self.color, [0, 0, self.w, self.h], self.border)
         elif self.border > 0:
             # Use modified color for outline
             if self.border_color:
                 line_color = self.border_color
             else:
                 line_color = shade(self.color)
-            pygame.draw.rect(new_image, line_color, [0, 0, self.w, self.h], self.border)
+            pg.draw.rect(new_image, line_color, [0, 0, self.w, self.h], self.border)
 
         # Draw Text
         if self.text:
@@ -150,24 +151,24 @@ class Sprite:
                 line_w = 12
             big_w = self.w + 2*shift
             big_h = self.h + 2*shift
-            glow = pygame.Surface((self.w + 2*shift, self.h + 2*shift))
+            glow = pg.Surface((self.w + 2*shift, self.h + 2*shift))
             glow.fill((0, 0, 0))
             glow.set_colorkey((0, 0, 0))
             k = 3
             points_list = [(2+shift, 0), (big_w - 4-shift, 0), (big_w, 4+shift), (big_w, big_h - 6-shift),
                            (big_w - 6-shift, big_h), (6+shift, big_h), (0, big_h - 6-shift), (0, 2+shift)]
-            pygame.draw.polygon(glow, color, points_list, line_w)
+            pg.draw.polygon(glow, color, points_list, line_w)
             screen.blit(glow, (self.x - shift, self.y - shift))
 
         if self.highlight or self.is_active:
             # Apply Over Tint
-            overlay = pygame.Surface((self.w, self.h))
+            overlay = pg.Surface((self.w, self.h))
             if self.over_fill:
                 overlay.fill(self.over_tint)
             else:
                 overlay.fill((0, 0, 0))
                 overlay.set_colorkey((0, 0, 0))
-                pygame.draw.rect(overlay, self.over_tint, (0, 0, self.w, self.h), self.border)
+                pg.draw.rect(overlay, self.over_tint, (0, 0, self.w, self.h), self.border)
             overlay.set_alpha(self.over_alpha)
             screen.blit(overlay, (self.x, self.y))
 
@@ -204,18 +205,18 @@ class Sprite:
     def input_text(self, events, hovered_sprites):
         if self.toggle_active:
             for event in events:
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pg.MOUSEBUTTONDOWN:
                     self.deactivate()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
+                elif event.type == pg.KEYDOWN:
+                    if event.key == pg.K_RETURN:
                         self.deactivate()
-                    elif event.key == pygame.K_BACKSPACE:
+                    elif event.key == pg.K_BACKSPACE:
                         self.text = self.text[:-1]
                     else:
                         self.text += event.unicode
         else:
             for e in events:
-                if e.type == pygame.MOUSEBUTTONUP:
+                if e.type == pg.MOUSEBUTTONUP:
                     if self in hovered_sprites:
                         self.activate()
 
@@ -237,16 +238,16 @@ class Ellipse(Sprite):
 
     def draw_image(self, artwork=False, template=False, extras=[]):
         # Create image surface
-        new_image = pygame.Surface([self.w, self.h])
+        new_image = pg.Surface([self.w, self.h])
 
         # Calculate rectangle holding ellipse using internal coordinates
         rect = (0, 0, self.w, self.h)
         if self.fill:
-            pygame.draw.ellipse(new_image, self.color, rect)
+            pg.draw.ellipse(new_image, self.color, rect)
             line_color = shade(self.color)
-            pygame.draw.ellipse(new_image, line_color, rect, self.border)
+            pg.draw.ellipse(new_image, line_color, rect, self.border)
         else:
-            pygame.draw.ellipse(new_image, self.color, rect, self.border)
+            pg.draw.ellipse(new_image, self.color, rect, self.border)
 
         # Draw Text
         if self.text:
@@ -264,23 +265,23 @@ class Ellipse(Sprite):
         if self.is_target:
             color = (255, 50, 50)
             line_w = 5
-            pygame.draw.ellipse(screen, color, (self.x, self.y, self.w, self.h), line_w)
+            pg.draw.ellipse(screen, color, (self.x, self.y, self.w, self.h), line_w)
 
         if self.highlight or self.is_active:
             # Apply Over Tint
-            overlay = pygame.Surface((self.w, self.h))
+            overlay = pg.Surface((self.w, self.h))
             overlay.fill((0, 0, 0))
             overlay.set_colorkey((0, 0, 0))
             rect = (0, 0, self.w, self.h)
             if self.over_fill:
-                pygame.draw.ellipse(overlay, self.over_tint, rect)
+                pg.draw.ellipse(overlay, self.over_tint, rect)
             else:
-                pygame.draw.ellipse(overlay, self.over_tint, rect, self.border)
+                pg.draw.ellipse(overlay, self.over_tint, rect, self.border)
             if self.max_w and self.w > self.max_w:
                 # Trim edges
                 buffer = (self.w - self.max_w) / 2
-                pygame.draw.rect(overlay, (0, 0, 0), (0, 0, buffer, self.h))
-                pygame.draw.rect(overlay, (0, 0, 0), (self.w - buffer, 0, self.w, self.h))
+                pg.draw.rect(overlay, (0, 0, 0), (0, 0, buffer, self.h))
+                pg.draw.rect(overlay, (0, 0, 0), (self.w - buffer, 0, self.w, self.h))
                 overlay.set_colorkey((0, 0, 0))
             overlay.set_alpha(self.over_alpha)
             screen.blit(overlay, (self.x, self.y))
@@ -306,7 +307,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
     while not lines_ready:
 
         # Generate font
-        complete_font = pygame.font.SysFont(font, int(fontsize))
+        complete_font = pg.font.SysFont(font, int(fontsize))
         font_height = complete_font.size('Nonsense')[1]
 
         # Render words into font
@@ -325,7 +326,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
             current_width = 0
             line_full = False
             while not line_full and current_word < len(words):
-                word_width = pygame.Surface.get_width(printed_words[current_word])
+                word_width = pg.Surface.get_width(printed_words[current_word])
                 if current_width + word_width < line_width:
                     lines[i].append(printed_words[current_word])
                     current_width += word_width
@@ -343,7 +344,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
 
     # Set word positions based on alignment, then blit them to surface
     for i, line in enumerate(lines):
-        current_line_width = sum([pygame.Surface.get_width(p) for p in line])
+        current_line_width = sum([pg.Surface.get_width(p) for p in line])
         if alignment == 'left':
             shift = 0
         elif alignment == 'right':
@@ -354,7 +355,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
         vertical_shift = (max_lines-n_filled_lines)/2 * font_height
         for p in line:
             surface.blit(p, (xmin + shift, ymin + i*(font_height + line_spacing)+ vertical_shift))
-            shift += pygame.Surface.get_width(p)
+            shift += pg.Surface.get_width(p)
 
     return True
 
