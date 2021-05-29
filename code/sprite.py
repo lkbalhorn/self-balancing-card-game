@@ -280,7 +280,7 @@ class Ellipse(Sprite):
     def decorate(self, screen):
         # Various things that need to be drawn after the object is blitted on screen
         if self.is_target:
-            color = (255,50,50)
+            color = (255, 50, 50)
             line_w = 5
             pygame.draw.ellipse(screen, color, (self.x, self.y, self.w, self.h), line_w)
 
@@ -304,7 +304,7 @@ class Ellipse(Sprite):
             screen.blit(overlay, (self.x, self.y))
 
     def collide(self, position):
-        x,y = position
+        x, y = position
         if self.x <= x <= self.x + self.w:
             if self.y <= y <= self.y + self.h:
                 return True
@@ -316,7 +316,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
 
     # Parse string into individual words
     words = text.split(' ')
-    for i,w in enumerate(words):
+    for i, w in enumerate(words):
         words[i] = w + ' '  # Add spaces back in
 
     # Loop until all words fit in the box.  Shrink the font if necessary.
