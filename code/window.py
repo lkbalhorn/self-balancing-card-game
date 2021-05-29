@@ -113,9 +113,8 @@ class Window:
     def draw_sprites(self, view):
         layered_sprites = sorted(view, key=lambda x: x.layer)
         for v in layered_sprites:
-            if not v.host:
-                self.screen.blit(self.sprite_images[v.id], (v.x, v.y))
-                v.decorate(self.screen)
+            self.screen.blit(self.sprite_images[v.id], (v.x, v.y))
+            v.decorate(self.screen)
 
     def update_sprites(self, view):
 
@@ -244,7 +243,7 @@ class Window:
 
             # Move static sprites to target position
             for i in sprites:
-                if i.is_static and not i.host:
+                if i.is_static:
                     i.x = i.x_target
                     i.y = i.y_target
 

@@ -11,8 +11,8 @@ class Sprite:
         # Set up general attributes
         self.name = 'sprite'
         self.type = 'sprite'
-        self.location = False
-        self.status = False
+        self.location = None
+        self.status = None
 
         # Set up geometry variables
         self.w = 100  # Using 100 instead of 0 for possible troubleshooting with grey boxes
@@ -23,8 +23,8 @@ class Sprite:
         # Set up visual variables
         self.color = (128, 128, 128)
         self.color_name = 'grey'
-        self.filename = False
-        self.template_filename = False
+        self.filename = None
+        self.template_filename = None
         self.fill = True
         self.border = 5
         self.fontsize = 20
@@ -32,10 +32,10 @@ class Sprite:
         self.alignment = 'center'
         self.alpha = 255  # Transparency
 
-        self.text = False
-        self.border_color = False
-        self.colorkey = False
-        self.artwork = False
+        self.text = None
+        self.border_color = None
+        self.colorkey = None
+        self.artwork = None
         self.highlight = False
         self.check_highlight = True
         self.is_active = False
@@ -50,7 +50,7 @@ class Sprite:
         self.toggle_active = False
         # Text Boxes
         self.is_text_box = False
-        self.old_text = False
+        self.old_text = None
 
         # Set up animation variables
         self.is_static = True
@@ -63,12 +63,11 @@ class Sprite:
         self.x_rel_mouse = 0
         self.y_rel_mouse = 0
         self.lock_to_object = False
-        self.host = False
 
         self.changed = True  # Image will re-update if it is changed.  Must be toggled for each object.
-        self.base = False  # Background for drawing objects more quickly
+        self.base = None  # Background for drawing objects more quickly
 
-        self.dest = False
+        self.dest = None
 
         # Game-specific variables - should go in a subclass eventually?
         self.is_target = False
@@ -79,7 +78,7 @@ class Sprite:
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
 
-    def draw_image(self, artwork: Optional[pg.Surface] = None, template=False):
+    def draw_image(self, artwork: Optional[pg.Surface] = None, template: Optional[pg.Surface] = None):
         # Create image surface
         new_image = pg.Surface([self.w, self.h])
 
@@ -149,9 +148,9 @@ class Sprite:
                 color = (50, 255, 0)
                 shift = 4
                 line_w = 12
-            big_w = self.w + 2*shift
-            big_h = self.h + 2*shift
-            glow = pg.Surface((self.w + 2*shift, self.h + 2*shift))
+            big_w = self.w + 2 * shift
+            big_h = self.h + 2 * shift
+            glow = pg.Surface((self.w + 2 * shift, self.h + 2 * shift))
             glow.fill((0, 0, 0))
             glow.set_colorkey((0, 0, 0))
             k = 3
