@@ -375,66 +375,6 @@ def align(items, dimension, value, skew=0.5):
                 i.y_target = value - i.h * skew
 
 
-def distribute(items, dimension, low=0, center=0, high=0, spacing=10, fixed_size = False):
-
-    # Find the total size of all the objects in this dimension
-    if fixed_size:
-        size_sum = fixed_size * len(items)
-    elif dimension == 0:  # distribute along x
-        size_sum = sum([i.w for i in items])
-    else:
-        size_sum = sum([i.h for i in items])
-
-    # Two of the four parameters must be defined, the others can be solved for.
-    n_items = len(items)
-    if low and center:
-        high = 2*center - low
-        spacing = (high - low - size_sum) / (n_items - 1)
-    elif low and high:
-        center = (high + low) / 2
-        spacing = (high - low - size_sum) / (n_items - 1)
-    elif center and high:
-        low = 2*center - high
-        spacing = (high - low - size_sum) / (n_items - 1)
-    elif low and spacing:
-        high = low + size_sum + spacing*(n_items-1)
-        center = (high + low) / 2
-    elif center and spacing:
-        high = center + (size_sum + spacing*(n_items-1)) / 2
-        low = 2 * center - high
-    elif high and spacing:
-        low = high - size_sum - spacing*(n_items-1)
-        center = (high + low) / 2
-    else:
-        # Assume center=0, spacing=10
-        # pass
-        print('Distribute requires two nonzero keyword arguments')
-        raise
-
-    # Assign positions
-    current_pos = low  # must be tracked because items can be of different sizes
-    if dimension == 0:
-        for i in items:
-            if i.is_static:
-                i.x = int(current_pos)
-            else:
-                i.x_target = int(current_pos)
-            if fixed_size:
-                current_pos += (spacing + fixed_size)
-            else:
-                current_pos += (spacing + i.w)
-    else:
-        for i in items:
-            if i.is_static:
-                i.y = int(current_pos)
-            else:
-                i.y_target = int(current_pos)
-            if fixed_size:
-                current_pos += (spacing + fixed_size)
-            else:
-                current_pos += (spacing + i.h)
-
-
 def shade(color, shade_fraction=0.5, shade_color=(0, 0, 0)):
     red = int(shade_color[0]*shade_fraction + color[0]*(1-shade_fraction))
     green = int(shade_color[1]*shade_fraction + color[1] * (1-shade_fraction))
