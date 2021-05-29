@@ -20,7 +20,7 @@ class Sprite:
         self.y = 100
 
         # Set up visual variables
-        self.color = (128,128,128)
+        self.color = (128, 128, 128)
         self.color_name = 'grey'
         self.filename = False
         self.template_filename = False
@@ -42,10 +42,12 @@ class Sprite:
         self.is_active = False
         self.is_hidden = False
 
-        self.is_text_box = False
-        self.toggle_active = False
-        self.old_text = False
+        # Widget Attributes
         self.is_toggle = False
+        self.toggle_active = False
+        # Text Boxes
+        self.is_text_box = False
+        self.old_text = False
 
         # Set up animation variables
         self.is_static = True
@@ -53,11 +55,6 @@ class Sprite:
         self.layer = 0
         self.x_target = 0
         self.y_target = 0
-        self.x_animate = 0
-        self.y_animate = 0
-        self.move_timer = 0
-        self.fade_timer = 0
-        self.vanish_timer = 0
         self.update = True
         self.drag_with_mouse = False
         self.x_rel_mouse = 0
