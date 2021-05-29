@@ -1,17 +1,17 @@
-# Import Classes
 import pygame
-from pygame.locals import *
-from collections import namedtuple
 
 
 class Sprite:
     # This is my own sprite class, not related to the Pygame sprite class
     def __init__(self, **kwargs):
-        self.name = 'sprite'
-        self.location = False
-        self.type = 'sprite'
-        self.status = False
+        # Create permanent ID
         self.id = str(id(self))
+
+        # Set up general attributes
+        self.name = 'sprite'
+        self.type = 'sprite'
+        self.location = False
+        self.status = False
 
         # Set up geometry variables
         self.w = 100  # Using 100 instead of 0 for possible troubleshooting with grey boxes
@@ -30,7 +30,7 @@ class Sprite:
         self.font_color = (0, 0, 0)
         self.alignment = 'center'
         self.alpha = 255  # Transparency
-        self.over_tint = (0, 0, 0) # For tinting the sprite
+        self.over_tint = (0, 0, 0)  # For tinting the sprite
         self.over_alpha = 0
         self.over_fill = True
         self.text = False
@@ -95,10 +95,7 @@ class Sprite:
         # Add Artwork
         if artwork:
             scaled_art = pygame.transform.scale(artwork, (self.w, self.h))
-            # if self.colorkey:
-            #     scaled_art.set_colorkey(self.colorkey)
             new_image.blit(scaled_art, (0, 0))
-
 
         # Draw Outline
         if self.border > 0 and not self.fill:
@@ -124,9 +121,8 @@ class Sprite:
                 self.colorkey = new_image.get_at((1, 1))[:3]
             new_image.set_colorkey(self.colorkey)
 
-        # Adjust Alpha
+        # Adjust Transparency
         new_image.set_alpha(self.alpha)
-
         if self.alpha == 1:
             new_image.convert()
         else:
