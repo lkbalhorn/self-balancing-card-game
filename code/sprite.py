@@ -44,7 +44,6 @@ class Sprite:
         self.over_alpha = 0
         self.over_fill = True
 
-
         # Widget Attributes
         self.is_toggle = False
         self.toggle_active = False
@@ -79,7 +78,7 @@ class Sprite:
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
 
-    def draw_image(self, artwork=False, template=False, extras=[]):
+    def draw_image(self, artwork=False, template=False):
         # Create image surface
         new_image = pygame.Surface([self.w, self.h])
 
@@ -138,15 +137,15 @@ class Sprite:
         # Status Outlines that 'Pop'
         if self.is_target or self.status == 'available' or self.status == 'active':
             if self.is_target:
-                color = (255,50,50)
+                color = (255, 50, 50)
                 shift = 2
                 line_w = 6
             elif self.status == 'available':
-                color = (0,200,255)
+                color = (0, 200, 255)
                 shift = 2
                 line_w = 6
             elif self.status == 'active':
-                color = (50,255,0)
+                color = (50, 255, 0)
                 shift = 4
                 line_w = 12
             big_w = self.w + 2*shift
@@ -295,7 +294,7 @@ class Ellipse(Sprite):
 
 
 def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
-                alignment = 'center', line_spacing = -2, font = 'arial', fontsize = 20, font_color = (0,0,0)):
+                alignment='center', line_spacing=-2, font='arial', fontsize=20, font_color=(0, 0, 0)):
 
     # Parse string into individual words
     words = text.split(' ')
@@ -354,7 +353,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
         n_filled_lines = len([j for j in lines if j])
         vertical_shift = (max_lines-n_filled_lines)/2 * font_height
         for p in line:
-            surface.blit(p,(xmin + shift, ymin + i*(font_height + line_spacing)+ vertical_shift))
+            surface.blit(p, (xmin + shift, ymin + i*(font_height + line_spacing)+ vertical_shift))
             shift += pygame.Surface.get_width(p)
 
     return True
