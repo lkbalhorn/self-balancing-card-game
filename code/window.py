@@ -71,7 +71,7 @@ class Window:
         pos = pygame.mouse.get_pos()
         events = pygame.event.get()
         hovered_ids = [s.id for s in view if s.collide(pos)]
-        mouse = pygame.mouse.get_pressed()
+        mouse = pygame.mouse.get_pressed(num_buttons=3)
         self.upkeep(events, pos)
         return events, hovered_ids, pos, mouse
 
