@@ -253,10 +253,6 @@ class Ellipse(Sprite):
         # Create image surface
         new_image = pygame.Surface([self.w, self.h])
 
-        # Create Transparent Background
-        new_image.fill((0, 0, 0))
-        new_image.set_colorkey((0, 0, 0))
-
         # Calculate rectangle holding ellipse using internal coordinates
         rect = (0, 0, self.w, self.h)
         if self.fill:
