@@ -360,21 +360,6 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
     return True
 
 
-def align(items, dimension, value, skew=0.5):
-    # Skew of 0 is align top/left, 0.5 is align center, 1 is align bottom/right, and everything in between
-    for i in items:
-        if i.is_static:
-            if dimension == 0:  # x values
-                i.x = value - i.w * skew
-            elif dimension == 1:  # y values
-                i.y = value - i.h * skew
-        else:
-            if dimension == 0:  # x values
-                i.x_target = value - i.w * skew
-            elif dimension == 1:  # y values
-                i.y_target = value - i.h * skew
-
-
 def shade(color, shade_fraction=0.5, shade_color=(0, 0, 0)):
     red = int(shade_color[0]*shade_fraction + color[0]*(1-shade_fraction))
     green = int(shade_color[1]*shade_fraction + color[1] * (1-shade_fraction))
