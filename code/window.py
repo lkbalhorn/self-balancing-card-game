@@ -1,4 +1,4 @@
-from sprite import *
+import pygame
 import asyncio
 import time
 import os
@@ -87,7 +87,7 @@ class Window:
         for event in events:
             if event.type == pygame.QUIT:
                 self.carry_on = False
-            elif event.type == VIDEORESIZE:
+            elif event.type == pygame.VIDEORESIZE:
                 self.screen = pygame.display.set_mode((event.w, event.h,),
                                                       pygame.RESIZABLE)
                 self.w = pygame.display.Info().current_w
@@ -95,11 +95,11 @@ class Window:
                 self.xc = self.w / 2
                 self.yc = self.h / 2 + 25
                 self.redraw = True
-            elif event.type == MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.last_click = (time.time(), pos, event.button)
-            elif event.type == MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONUP:
                 self.last_unclick = (time.time(), pos, event.button)
-            elif event.type == MOUSEMOTION:
+            elif event.type == pygame.MOUSEMOTION:
                 self.last_motion = (time.time(), pos, event.rel, event.buttons)
             self.last_pos = pos
 
