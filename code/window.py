@@ -2,19 +2,14 @@ from sprite import *
 import asyncio
 import time
 import os
-from screeninfo import get_monitors
 
 
 class Window:
     # Does all the stuff you want done automatically in a visual presentation
     def __init__(self, w, h, title):
         # Set up visual display
-        try:
-            for m in get_monitors():
-                w, h = m.width, m.height - 40
-        except Exception as e:
-            w = 1550
-            h = 800
+        w = 1550
+        h = 800
 
         self.w = w
         self.h = h
