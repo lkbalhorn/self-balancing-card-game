@@ -80,11 +80,6 @@ class Sprite:
         for key in kwargs:
             self.__dict__[key] = kwargs[key]
 
-    def change(self, **kwargs):
-        # Allows one-line changing of dictionary using keyword arguments
-        for key in kwargs:
-            self.__dict__[key] = kwargs[key]
-
     def draw_image(self, artwork=False, template=False, extras=[]):
         # Create image surface
         new_image = pygame.Surface([self.w, self.h])
