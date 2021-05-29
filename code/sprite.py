@@ -183,7 +183,7 @@ class Sprite:
             screen.blit(overlay, (self.x, self.y))
 
     def collide(self, position):
-        x,y = position
+        x, y = position
         if self.x <= x <= self.x + self.w:
             if self.y <= y <= self.y + self.h:
                 return True
@@ -216,7 +216,6 @@ class Sprite:
             self.activate()
 
     def input_text(self, events, hovered_sprites):
-
         if self.toggle_active:
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
@@ -230,55 +229,7 @@ class Sprite:
                         self.text += event.unicode
         else:
             for e in events:
-                if e.type == 5:
-                    if self in hovered_sprites:
-                        self.activate()
-
-        return self.text
-
-class TextBox(Sprite):
-    def __init__(self, **kwargs):
-        super().__init__()
-        self.toggle_active = False
-        self.is_text_box = True
-        self.old_text = False
-        self.image_traits = ['w', 'h', 'color', 'is_active', 'text']
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-
-    def activate(self):
-        self.toggle_active = True
-        self.old_text = self.text
-        self.text = ''
-
-    def deactivate(self):
-        if self.text == '':
-            self.text = self.old_text
-        self.toggle_active = False
-
-    def toggle(self):
-        if self.toggle_active:
-            self.deactivate()
-        else:
-            self.activate()
-
-    def input_text(self, events, hovered_sprites):
-
-        if self.toggle_active:
-            for event in events:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.deactivate()
-                elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        self.deactivate()
-                    elif event.key == pygame.K_BACKSPACE:
-                        self.text = self.text[:-1]
-                    else:
-                        self.text += event.unicode
-        else:
-            for e in events:
-                if e.type == 5:
+                if e.type == pygame.MOUSEBUTTONUP:
                     if self in hovered_sprites:
                         self.activate()
 

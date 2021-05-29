@@ -368,9 +368,10 @@ class DeckBuilder(Page):
             g.align(window)
 
 
-class DeckSummary(TextBox):
+class DeckSummary(Sprite):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.is_text_box = True
 
 
 class GameLobby(Page):
@@ -389,8 +390,10 @@ class GameLobby(Page):
         self.play_button = Sprite(color=Colors['Wood'], w=500, h=50, name='play_button', text='Play', is_toggle=True)
         play_left.sprites.append(self.play_button)
 
-        self.name_choice = TextBox(color=Colors['Wood'], w=300, h=50, name='name_choice', text=self.host.screen_name)
-        self.server_choice = TextBox(color=Colors['Wood'], w=300, h=50, name='server_choice', text=self.host.server)
+        self.name_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='name_choice',
+                                  text=self.host.screen_name, is_text_box=True)
+        self.server_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='server_choice',
+                                    text=self.host.server, is_text_box=True)
         deck_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='deck_choice',
                              text=self.host.chosen_values['Decks'][0].name)
         play_right.sprites = [self.name_choice, self.server_choice, deck_choice]
