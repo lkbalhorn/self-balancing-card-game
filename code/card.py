@@ -309,13 +309,6 @@ class Card(Sprite):
             buffer = 10
             wrap_text_2(new_image, self.special_text, buffer, self.h / 2 + buffer + 10, self.w - buffer, self.h - buffer)
 
-        # Draw Tags
-        self.update_subsprites()
-        if 'tags' in items:
-            if len(extras) == len(self.subsprites):
-                for i, s in enumerate(self.subsprites):
-                    new_image.blit(extras[i], (s.x, s.y), area=(1, 1, 1000, 1000))
-
         # Draw Status Outline
         if self.is_target:
             color = (255, 50, 50)
@@ -336,17 +329,6 @@ class Card(Sprite):
         pygame.draw.rect(new_image, color, (0, 0, self.w, self.h), line_w)
 
         return new_image, None
-
-    def update_subsprites(self):
-        if len(self.subsprites) != len(self.tags):
-            self.subsprites = [Sprite(filename=tag_file_dict[t], host=self, w=40, h=40, name='%s Tag' % t,
-                                      fill=False, border=0, colorkey='get corner')
-                               for t in self.tags if t in tag_file_dict]
-        align(self.subsprites, 0, self.w - 3, skew=1)
-        distribute(self.subsprites, 1, low=4, spacing=-10)
-        # if self.size != 'big':
-        #     for i in self.subsprites:
-        #         i.x += 20000
 
     def move_anywhere(self, target, position=False):
         if self.location:  # Cards start with no location

@@ -56,11 +56,8 @@ class Page:
     def view(self):
         return ([sprite
                 for group in self.groups
-                for sprite in group.sprites] +
-                [subsprite
-                 for group in self.groups
-                 for sprite in group.sprites
-                 for subsprite in sprite.subsprites])
+                for sprite in group.sprites]
+                )
 
     def get_sprite(self, id):
         results = [i for i in self.view() if i.id == id]
@@ -166,8 +163,7 @@ class Group:
                 window.align_sprites(self.sprites, self.align_dim, self.align_ref, self.align_pos, self.align_skew,
                                      self.dist_dim, self.dist_ref, low=self.low, center=self.center, high=self.high,
                                      spacing=self.spacing, fixed_size=self.fixed_size)
-            for i in self.sprites:
-                i.update_subsprites()
+
         except AttributeError as e:
             print('Error while Aligning', self)
             print(e)

@@ -63,7 +63,6 @@ class Sprite:
         self.x_rel_mouse = 0
         self.y_rel_mouse = 0
         self.lock_to_object = False
-        self.subsprites = []  # Positions are relative to their host
         self.host = False
 
         self.changed = True  # Image will re-update if it is changed.  Must be toggled for each object.
@@ -185,9 +184,6 @@ class Sprite:
 
     def clone(self):
         return self
-
-    def update_subsprites(self):
-        pass
 
     # Text Box Effects
     def activate(self):

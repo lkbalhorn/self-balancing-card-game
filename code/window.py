@@ -116,8 +116,6 @@ class Window:
             if not v.host:
                 self.screen.blit(self.sprite_images[v.id], (v.x, v.y))
                 v.decorate(self.screen)
-                # for s in v.subsprites:
-                #     self.screen.blit(self.sprite_images[s.id], (v.x + s.x, v.y + s.y))
 
     def update_sprites(self, view):
 
@@ -128,30 +126,26 @@ class Window:
             self.sprite_positions = sprite_positions
 
         # Check if sprite key traits have changed, and if so redraw sprites
-        for v in view:
-            for s in v.subsprites + [v]:
-                if s.id not in self.sprite_traits:
-                    self.sprite_traits[s.id] = {}
+        for s in view:
+            if s.id not in self.sprite_traits:
+                self.sprite_traits[s.id] = {}
 
-                old_dict = self.sprite_traits[s.id]
-                new_dict = {t: s.__dict__[t] for t in s.image_traits if hasattr(s, t)}
-                if old_dict != new_dict:
-                    # Redraw Image
-                    artwork = self.load_artwork(s.filename) if hasattr(s, 'filename') else False
-                    template = self.sprite_templates[s.id] if s.id in self.sprite_templates else False
-                    if s.id not in self.sprite_templates:
-                        if s.template_filename:
-                            template = self.load_artwork(s.template_filename)
-                        else:
-                            self.sprite_templates[s.id] = False  # Serves as a placeholder, DrawImage will return a template
-                    if s.subsprites:
-                        extras = [self.sprite_images[i.id] for i in s.subsprites]
-                    else: extras = []
-                    self.sprite_images[s.id], self.sprite_templates[s.id] = s.draw_image(
-                        artwork=artwork, template=template, extras=extras)
+            old_dict = self.sprite_traits[s.id]
+            new_dict = {t: s.__dict__[t] for t in s.image_traits if hasattr(s, t)}
+            if old_dict != new_dict:
+                # Redraw Image
+                artwork = self.load_artwork(s.filename) if hasattr(s, 'filename') else False
+                template = self.sprite_templates[s.id] if s.id in self.sprite_templates else False
+                if s.id not in self.sprite_templates:
+                    if s.template_filename:
+                        template = self.load_artwork(s.template_filename)
+                    else:
+                        self.sprite_templates[s.id] = False  # Serves as a placeholder, DrawImage will return a template
+                self.sprite_images[s.id], self.sprite_templates[s.id] = s.draw_image(
+                    artwork=artwork, template=template)
 
-                    self.redraw = True
-                    self.sprite_traits[s.id] = new_dict
+                self.redraw = True
+                self.sprite_traits[s.id] = new_dict
 
     def load_artwork(self, filename, screen_size=False):
         # Checks archives for a file, and loads it if necessary.  Returns the image and stores it for later use.
@@ -259,12 +253,6 @@ class Window:
                 if not i.is_static:
                     i.x = i.x + (i.x_target - i.x)
 
-            # Move subsprites to target position
-            for i in sprites:
-                for j in i.subsprites:
-                    j.x = j.x_target + j.host.x
-                    j.y = j.y_target + j.host.y
-                    j.layer = j.host.layer + 0.5
         except AttributeError as e:
             print('Error While Aligning', sprites)
             print(e)
