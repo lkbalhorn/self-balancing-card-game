@@ -75,6 +75,14 @@ class Window:
         self.upkeep(events, pos)
         return events, hovered_ids, pos, mouse
 
+    def update_screen(self, sprites, background):
+        self.update_sprites(sprites)
+        if self.redraw:
+            self.draw_background(background)
+            self.draw_sprites(sprites)
+            pygame.display.flip()
+            self.redraw = False
+
     def upkeep(self, events, pos):
         for event in events:
             if event.type == pygame.QUIT:
@@ -112,11 +120,13 @@ class Window:
                 #     self.screen.blit(self.sprite_images[s.id], (v.x + s.x, v.y + s.y))
 
     def update_sprites(self, view):
+
         # Check if sprite positions have changed, and if so redraw screen
         sprite_positions = [(s.id, s.x, s.y, s.highlight, s.over_alpha) for s in view]
         if sprite_positions != self.sprite_positions:
             self.redraw = True
             self.sprite_positions = sprite_positions
+
         # Check if sprite key traits have changed, and if so redraw sprites
         for v in view:
             for s in v.subsprites + [v]:
@@ -149,18 +159,16 @@ class Window:
             return False
         if filename in self.sprite_artwork:
             return self.sprite_artwork[filename]
-        elif filename != '':
+        if filename != '':
             try:
                 image = pygame.image.load('..//media//' + filename)
                 if screen_size:
                     image = pygame.transform.scale(image, (self.background_w, self.background_h))
-                # image.convert()
                 self.sprite_artwork[filename] = image
                 return image
-            except Exception as e:
+            except OSError:
                 return False
-        else:
-            return False
+        return False
 
     async def preload_artwork(self, filenames):
         for filename in filenames:
