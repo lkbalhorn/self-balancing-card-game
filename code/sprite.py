@@ -148,12 +148,14 @@ class Sprite:
                 color = (50, 255, 0)
                 shift = 4
                 line_w = 12
+            else:
+                return
+
             big_w = self.w + 2 * shift
             big_h = self.h + 2 * shift
             glow = pg.Surface((self.w + 2 * shift, self.h + 2 * shift))
             glow.fill((0, 0, 0))
             glow.set_colorkey((0, 0, 0))
-            k = 3
             points_list = [(2+shift, 0), (big_w - 4-shift, 0), (big_w, 4+shift), (big_w, big_h - 6-shift),
                            (big_w - 6-shift, big_h), (6+shift, big_h), (0, big_h - 6-shift), (0, 2+shift)]
             pg.draw.polygon(glow, color, points_list, line_w)
@@ -353,7 +355,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
         n_filled_lines = len([j for j in lines if j])
         vertical_shift = (max_lines-n_filled_lines)/2 * font_height
         for p in line:
-            surface.blit(p, (xmin + shift, ymin + i*(font_height + line_spacing)+ vertical_shift))
+            surface.blit(p, (xmin + shift, ymin + i * (font_height + line_spacing) + vertical_shift))
             shift += pg.Surface.get_width(p)
 
     return True
