@@ -30,9 +30,7 @@ class Sprite:
         self.font_color = (0, 0, 0)
         self.alignment = 'center'
         self.alpha = 255  # Transparency
-        self.over_tint = (0, 0, 0)  # For tinting the sprite
-        self.over_alpha = 0
-        self.over_fill = True
+
         self.text = False
         self.border_color = False
         self.colorkey = False
@@ -41,6 +39,11 @@ class Sprite:
         self.check_highlight = True
         self.is_active = False
         self.is_hidden = False
+        # Overlay
+        self.over_tint = (0, 0, 0)  # For tinting the sprite
+        self.over_alpha = 0
+        self.over_fill = True
+
 
         # Widget Attributes
         self.is_toggle = False
