@@ -235,7 +235,7 @@ class Ellipse(Sprite):
         for key in kwargs:
             setattr(self, key, kwargs[key])
 
-    def draw_image(self, artwork=False, template=False, extras=[]):
+    def draw_image(self, artwork=False, template=False):
         # Create image surface
         new_image = pg.Surface([self.w, self.h])
 
