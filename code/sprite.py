@@ -75,8 +75,8 @@ class Sprite:
         self.Player = None
 
         # Process additional arguments
-        for key in kwargs:
-            self.__dict__[key] = kwargs[key]
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def draw_image(self, artwork: Optional[pg.Surface] = None, template: Optional[pg.Surface] = None):
         # Create image surface
@@ -222,77 +222,6 @@ class Sprite:
                         self.activate()
 
         return self.text
-
-
-class Ellipse(Sprite):
-    def __init__(self, **kwargs):
-        super().__init__()
-        self.center_x = 10
-        self.center_y = 10
-        self.rx = 10
-        self.ry = 10
-        self.max_w = False
-
-        # Process additional arguments
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-
-    def draw_image(self, artwork=False, template=False):
-        # Create image surface
-        new_image = pg.Surface([self.w, self.h])
-
-        # Calculate rectangle holding ellipse using internal coordinates
-        rect = (0, 0, self.w, self.h)
-        if self.fill:
-            pg.draw.ellipse(new_image, self.color, rect)
-            line_color = shade(self.color)
-            pg.draw.ellipse(new_image, line_color, rect, self.border)
-        else:
-            pg.draw.ellipse(new_image, self.color, rect, self.border)
-
-        # Draw Text
-        if self.text:
-            buffer = 2*self.border
-            wrap_text_2(new_image, self.text, buffer, buffer, self.w - buffer, self.h - buffer,
-                        alignment='center', fontsize=self.fontsize, font_color=self.font_color)
-
-        # Set Colorkey
-        if self.colorkey:
-            new_image.set_colorkey(self.colorkey)
-        return new_image, None
-
-    def decorate(self, screen):
-        # Various things that need to be drawn after the object is blitted on screen
-        if self.is_target:
-            color = (255, 50, 50)
-            line_w = 5
-            pg.draw.ellipse(screen, color, (self.x, self.y, self.w, self.h), line_w)
-
-        if self.highlight or self.is_active:
-            # Apply Over Tint
-            overlay = pg.Surface((self.w, self.h))
-            overlay.fill((0, 0, 0))
-            overlay.set_colorkey((0, 0, 0))
-            rect = (0, 0, self.w, self.h)
-            if self.over_fill:
-                pg.draw.ellipse(overlay, self.over_tint, rect)
-            else:
-                pg.draw.ellipse(overlay, self.over_tint, rect, self.border)
-            if self.max_w and self.w > self.max_w:
-                # Trim edges
-                buffer = (self.w - self.max_w) / 2
-                pg.draw.rect(overlay, (0, 0, 0), (0, 0, buffer, self.h))
-                pg.draw.rect(overlay, (0, 0, 0), (self.w - buffer, 0, self.w, self.h))
-                overlay.set_colorkey((0, 0, 0))
-            overlay.set_alpha(self.over_alpha)
-            screen.blit(overlay, (self.x, self.y))
-
-    def collide(self, position):
-        x, y = position
-        if self.x <= x <= self.x + self.w:
-            if self.y <= y <= self.y + self.h:
-                return True
-        return False
 
 
 def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
