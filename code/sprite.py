@@ -314,7 +314,7 @@ def wrap_text_2(surface, text, xmin, ymin, xmax, ymax,
         # Render words into font
         printed_words = []
         for w in words:
-            p = complete_font.render(w, 1, font_color)
+            p = complete_font.render(w, True, font_color)
             printed_words.append(p)
 
         # Split words into lines
