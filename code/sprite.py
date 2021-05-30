@@ -74,7 +74,7 @@ class Sprite:
         self.is_card = False
         self.Player = None
 
-        # Process additional arguments
+        # Process keyword arguments
         for key, value in kwargs.items():
             setattr(self, key, value)
 

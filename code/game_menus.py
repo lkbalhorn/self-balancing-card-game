@@ -231,13 +231,13 @@ class DeckBuilder(Page):
 
         for e in events:
             if e.type == pygame.KEYDOWN:
-                if e.key == K_UP and self.y_page > 0:
+                if e.key == pg.K_UP and self.y_page > 0:
                     self.y_page -= 1
-                elif e.key == K_DOWN and self.y_page < len(self.color_list) - 1:
+                elif e.key == pg.K_DOWN and self.y_page < len(self.color_list) - 1:
                     self.y_page += 1
-                elif e.key == K_LEFT and self.x_page > 0:
+                elif e.key == pg.K_LEFT and self.x_page > 0:
                     self.x_page -= 1
-                elif e.key == K_RIGHT:
+                elif e.key == pg.K_RIGHT:
                     self.x_page += 1
                 max_x_pages = len(self.color_groups[self.color_list[self.y_page]][::10]) - 1
                 if self.x_page > max_x_pages:
