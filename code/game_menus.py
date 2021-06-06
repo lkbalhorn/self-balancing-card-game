@@ -72,13 +72,12 @@ class MainMenu(Menu):
                 h.text = self.chosen_values['Decks'][1].name
 
     def set_deck(self, id=False, position=0):
+        id = str(id)  # I thought id values were supposed to be str - look into this
         if id and id in deck_dictionary:
             deck_data = deck_dictionary[id]
             deck = Deck(data=deck_data)
-            print('loaded from id')
         else:
             deck = get_recent_decks()[position]
-            print('loaded from recent decks')
         self.chosen_values['Decks'][position] = deck
 
 
@@ -232,13 +231,13 @@ class DeckBuilder(Page):
 
         for e in events:
             if e.type == pygame.KEYDOWN:
-                if e.key == K_UP and self.y_page > 0:
+                if e.key == pg.K_UP and self.y_page > 0:
                     self.y_page -= 1
-                elif e.key == K_DOWN and self.y_page < len(self.color_list) - 1:
+                elif e.key == pg.K_DOWN and self.y_page < len(self.color_list) - 1:
                     self.y_page += 1
-                elif e.key == K_LEFT and self.x_page > 0:
+                elif e.key == pg.K_LEFT and self.x_page > 0:
                     self.x_page -= 1
-                elif e.key == K_RIGHT:
+                elif e.key == pg.K_RIGHT:
                     self.x_page += 1
                 max_x_pages = len(self.color_groups[self.color_list[self.y_page]][::10]) - 1
                 if self.x_page > max_x_pages:
@@ -369,9 +368,10 @@ class DeckBuilder(Page):
             g.align(window)
 
 
-class DeckSummary(TextBox):
+class DeckSummary(Sprite):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.is_text_box = True
 
 
 class GameLobby(Page):
@@ -390,8 +390,10 @@ class GameLobby(Page):
         self.play_button = Sprite(color=Colors['Wood'], w=500, h=50, name='play_button', text='Play', is_toggle=True)
         play_left.sprites.append(self.play_button)
 
-        self.name_choice = TextBox(color=Colors['Wood'], w=300, h=50, name='name_choice', text=self.host.screen_name)
-        self.server_choice = TextBox(color=Colors['Wood'], w=300, h=50, name='server_choice', text=self.host.server)
+        self.name_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='name_choice',
+                                  text=self.host.screen_name, is_text_box=True)
+        self.server_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='server_choice',
+                                    text=self.host.server, is_text_box=True)
         deck_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='deck_choice',
                              text=self.host.chosen_values['Decks'][0].name)
         play_right.sprites = [self.name_choice, self.server_choice, deck_choice]

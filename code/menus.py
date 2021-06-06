@@ -1,7 +1,5 @@
-from collections import namedtuple
-from sprite import *
-from globals import *
-from client import *
+from client import Client, shade
+import pygame as pg
 
 
 class Menu:
@@ -29,7 +27,7 @@ class Menu:
 
     def navigate(self, events, hovered_ids):
         for e in events:
-            if e.type == pygame.MOUSEBUTTONUP:  # Unclick
+            if e.type == pg.MOUSEBUTTONUP:  # Unclick
                 for v in [i for i in self.current_page.view() if i.id in hovered_ids]:
                     if v.name == 'Back':
                         self.set_page(self.current_page.parent)
@@ -56,11 +54,8 @@ class Page:
     def view(self):
         return ([sprite
                 for group in self.groups
-                for sprite in group.sprites] +
-                [subsprite
-                 for group in self.groups
-                 for sprite in group.sprites
-                 for subsprite in sprite.subsprites])
+                for sprite in group.sprites]
+                )
 
     def get_sprite(self, id):
         results = [i for i in self.view() if i.id == id]
@@ -80,9 +75,9 @@ class Page:
 
         # Check hotkeys for devtools settings
         for e in events:
-            if e.type == pygame.KEYDOWN:
-                if e.mod == pygame.KMOD_LCTRL or e.mod == pygame.KMOD_RCTRL:  # Either control key is held, or both
-                    if e.key == pygame.K_a:
+            if e.type == pg.KEYDOWN:
+                if e.mod == pg.KMOD_LCTRL or e.mod == pg.KMOD_RCTRL:  # Either control key is held, or both
+                    if e.key == pg.K_a:
                         print('a')
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
@@ -115,7 +110,7 @@ class Page:
             elif v.is_toggle:
                 if v in hovered_sprites:
                     for e in events:
-                        if e.type == pygame.MOUSEBUTTONDOWN:
+                        if e.type == pg.MOUSEBUTTONDOWN:
                             v.toggle_active = not v.toggle_active
 
     def enter(self, source):
@@ -166,8 +161,7 @@ class Group:
                 window.align_sprites(self.sprites, self.align_dim, self.align_ref, self.align_pos, self.align_skew,
                                      self.dist_dim, self.dist_ref, low=self.low, center=self.center, high=self.high,
                                      spacing=self.spacing, fixed_size=self.fixed_size)
-            for i in self.sprites:
-                i.update_subsprites()
+
         except AttributeError as e:
             print('Error while Aligning', self)
             print(e)

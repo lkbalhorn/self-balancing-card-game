@@ -1,20 +1,15 @@
-from sprite import *
+import pygame
 import asyncio
 import time
 import os
-from screeninfo import get_monitors
 
 
 class Window:
     # Does all the stuff you want done automatically in a visual presentation
     def __init__(self, w, h, title):
         # Set up visual display
-        try:
-            for m in get_monitors():
-                w, h = m.width, m.height - 40
-        except Exception as e:
-            w = 1550
-            h = 800
+        w = 1550
+        h = 800
 
         self.w = w
         self.h = h
@@ -34,7 +29,7 @@ class Window:
         self.background_w = 1500
         self.background_h = 960
 
-        self.sprite_images = {}  # Images stored by object ID allow sprites to be pickled and sent
+        self.sprite_images = {}  # Images stored by object ID allow sprites to be serialized and sent
         self.sprite_templates = {}
         self.sprite_artwork = {}
         self.sprite_traits = {}  # Stores key data by id number to determine if sprites need to be updated
@@ -76,15 +71,23 @@ class Window:
         pos = pygame.mouse.get_pos()
         events = pygame.event.get()
         hovered_ids = [s.id for s in view if s.collide(pos)]
-        mouse = pygame.mouse.get_pressed()
+        mouse = pygame.mouse.get_pressed(num_buttons=3)
         self.upkeep(events, pos)
         return events, hovered_ids, pos, mouse
+
+    def update_screen(self, sprites, background):
+        self.update_sprites(sprites)
+        if self.redraw:
+            self.draw_background(background)
+            self.draw_sprites(sprites)
+            pygame.display.flip()
+            self.redraw = False
 
     def upkeep(self, events, pos):
         for event in events:
             if event.type == pygame.QUIT:
                 self.carry_on = False
-            elif event.type == VIDEORESIZE:
+            elif event.type == pygame.VIDEORESIZE:
                 self.screen = pygame.display.set_mode((event.w, event.h,),
                                                       pygame.RESIZABLE)
                 self.w = pygame.display.Info().current_w
@@ -92,66 +95,56 @@ class Window:
                 self.xc = self.w / 2
                 self.yc = self.h / 2 + 25
                 self.redraw = True
-            elif event.type == MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.last_click = (time.time(), pos, event.button)
-            elif event.type == MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONUP:
                 self.last_unclick = (time.time(), pos, event.button)
-            elif event.type == MOUSEMOTION:
+            elif event.type == pygame.MOUSEMOTION:
                 self.last_motion = (time.time(), pos, event.rel, event.buttons)
             self.last_pos = pos
 
-    def draw_background(self, *args):
-        # Each arg should be a tuple of filename and alpha
+    def draw_background(self, filename):
         self.screen.fill((0, 0, 0))
-
-        for tup in args:
-            filename, alpha = tup
-            image = self.load_artwork(filename, screen_size=True)  # Keeps archived, so the file is only loaded once
-            if image:
-                x, y = self.xc - image.get_width() / 2, 0
-                image.set_alpha(alpha)
-                self.screen.blit(image, (x, y))
+        image = self.load_artwork(filename, screen_size=True)  # Keeps archived, so the file is only loaded once
+        if image:
+            x, y = self.xc - image.get_width() / 2, 0
+            self.screen.blit(image, (x, y))
 
     def draw_sprites(self, view):
         layered_sprites = sorted(view, key=lambda x: x.layer)
         for v in layered_sprites:
-            if not v.host:
-                self.screen.blit(self.sprite_images[v.id], (v.x, v.y))
-                v.decorate(self.screen)
-                # for s in v.subsprites:
-                #     self.screen.blit(self.sprite_images[s.id], (v.x + s.x, v.y + s.y))
+            self.screen.blit(self.sprite_images[v.id], (v.x, v.y))
+            v.decorate(self.screen)
 
     def update_sprites(self, view):
+
         # Check if sprite positions have changed, and if so redraw screen
         sprite_positions = [(s.id, s.x, s.y, s.highlight, s.over_alpha) for s in view]
         if sprite_positions != self.sprite_positions:
             self.redraw = True
             self.sprite_positions = sprite_positions
+
         # Check if sprite key traits have changed, and if so redraw sprites
-        for v in view:
-            for s in v.subsprites + [v]:
-                if s.id not in self.sprite_traits:
-                    self.sprite_traits[s.id] = {}
+        for s in view:
+            if s.id not in self.sprite_traits:
+                self.sprite_traits[s.id] = {}
 
-                old_dict = self.sprite_traits[s.id]
-                new_dict = {t: s.__dict__[t] for t in s.image_traits if hasattr(s, t)}
-                if old_dict != new_dict:
-                    # Redraw Image
-                    artwork = self.load_artwork(s.filename) if hasattr(s, 'filename') else False
-                    template = self.sprite_templates[s.id] if s.id in self.sprite_templates else False
-                    if s.id not in self.sprite_templates:
-                        if s.template_filename:
-                            template = self.load_artwork(s.template_filename)
-                        else:
-                            self.sprite_templates[s.id] = False  # Serves as a placeholder, DrawImage will return a template
-                    if s.subsprites:
-                        extras = [self.sprite_images[i.id] for i in s.subsprites]
-                    else: extras = []
-                    self.sprite_images[s.id], self.sprite_templates[s.id] = s.draw_image(
-                        artwork=artwork, template=template, extras=extras)
+            old_dict = self.sprite_traits[s.id]
+            new_dict = {t: s.__dict__[t] for t in s.image_traits if hasattr(s, t)}
+            if old_dict != new_dict:
+                # Redraw Image
+                artwork = self.load_artwork(s.filename) if hasattr(s, 'filename') else False
+                template = self.sprite_templates[s.id] if s.id in self.sprite_templates else False
+                if s.id not in self.sprite_templates:
+                    if s.template_filename:
+                        template = self.load_artwork(s.template_filename)
+                    else:
+                        self.sprite_templates[s.id] = False  # Serves as a placeholder, DrawImage will return a template
+                self.sprite_images[s.id], self.sprite_templates[s.id] = s.draw_image(
+                    artwork=artwork, template=template)
 
-                    self.redraw = True
-                    self.sprite_traits[s.id] = new_dict
+                self.redraw = True
+                self.sprite_traits[s.id] = new_dict
 
     def load_artwork(self, filename, screen_size=False):
         # Checks archives for a file, and loads it if necessary.  Returns the image and stores it for later use.
@@ -159,18 +152,16 @@ class Window:
             return False
         if filename in self.sprite_artwork:
             return self.sprite_artwork[filename]
-        elif filename != '':
+        if filename != '':
             try:
                 image = pygame.image.load('..//media//' + filename)
                 if screen_size:
                     image = pygame.transform.scale(image, (self.background_w, self.background_h))
-                # image.convert()
                 self.sprite_artwork[filename] = image
                 return image
-            except Exception as e:
+            except OSError:
                 return False
-        else:
-            return False
+        return False
 
     async def preload_artwork(self, filenames):
         for filename in filenames:
@@ -249,10 +240,9 @@ class Window:
                     else:
                         current_pos += (spacing + i.h)
 
-
             # Move static sprites to target position
             for i in sprites:
-                if i.is_static and not i.host:
+                if i.is_static:
                     i.x = i.x_target
                     i.y = i.y_target
 
@@ -261,12 +251,6 @@ class Window:
                 if not i.is_static:
                     i.x = i.x + (i.x_target - i.x)
 
-            # Move subsprites to target position
-            for i in sprites:
-                for j in i.subsprites:
-                    j.x = j.x_target + j.host.x
-                    j.y = j.y_target + j.host.y
-                    j.layer = j.host.layer + 0.5
         except AttributeError as e:
             print('Error While Aligning', sprites)
             print(e)

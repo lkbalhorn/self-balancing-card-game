@@ -3,7 +3,7 @@ import asyncio
 import json
 from aiohttp import web
 import socket
-from netifaces import interfaces, ifaddresses, AF_INET
+# from netifaces import interfaces, ifaddresses, AF_INET
 
 import game as gm
 import time
@@ -165,9 +165,9 @@ if __name__ == "__main__":
     print('Serving on {}'.format(ip))
 
     # Using netifaces
-    for ifaceName in interfaces():
-        addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
-        print('%s: %s' % (ifaceName, ', '.join(addresses)))
+    # for ifaceName in interfaces():
+    #     addresses = [i['addr'] for i in ifaddresses(ifaceName).setdefault(AF_INET, [{'addr': 'No IP addr'}])]
+    #     print('%s: %s' % (ifaceName, ', '.join(addresses)))
 
     # Serve requests until Ctrl+C is pressed
     try:

@@ -1,6 +1,7 @@
 from window import *
 from game_menus import *
 
+
 def main():
     with Window(1500, 800, "Razor's Edge") as window:
         menu = MainMenu(window)
@@ -22,12 +23,7 @@ async def async_main(window, menu, loop):
         page.update_positions(window)
         page.upkeep()
 
-        window.update_sprites(page.view())
-        if window.redraw:
-            window.draw_background((page.background, 255))
-            window.draw_sprites(page.view())
-            pygame.display.flip()
-            window.redraw = False
+        window.update_screen(page.view(), page.background)
 
         await delay
 

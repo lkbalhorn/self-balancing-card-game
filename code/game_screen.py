@@ -408,13 +408,8 @@ class GameScreen(Page):
                     # if self.active_player and self.active_player.hero and c == self.active_player.hero and len(hovered_sprites) > 1:
                     #     pass
 
-                    # Choosing Mulligan Targets
-                    if self.turn < 1 and not c.is_target and hasattr(c.location, 'type') and c.location.type == 'Hand':
-                        c.is_target = True
-                        self.active_player.targets.append(c)
-
                     # Choosing Targets
-                    elif (self.active_card
+                    if (self.active_card
                           and not c.is_target
                           and self.active_card.legal_target(c)):
                         c.is_target = True
