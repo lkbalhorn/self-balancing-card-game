@@ -240,7 +240,6 @@ class Window:
                     else:
                         current_pos += (spacing + i.h)
 
-
             # Move static sprites to target position
             for i in sprites:
                 if i.is_static:
