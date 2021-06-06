@@ -7,6 +7,7 @@ import math
 import json
 import functools
 import sys
+from card import card_manager
 
 
 # Create server object for both online and local play
@@ -107,8 +108,7 @@ class Game:
 
     def deal_cards(self, decks):
         # Refresh card list
-        global card_dictionary
-        card_dictionary = import_card_library()
+        card_manager.get_changes()
 
         # Set up game objects
         for i, p in enumerate(self.players):
@@ -116,7 +116,7 @@ class Game:
             new_deck = decks[i]
             card_names = new_deck.card_names if hasattr(new_deck, 'card_names') else new_deck
             for name in card_names:
-                new = load_card(name, p)
+                new = card_manager.load_card(name, p)
                 p.deck.append(new)
                 new.location = p.deck
             p.deck.player = p

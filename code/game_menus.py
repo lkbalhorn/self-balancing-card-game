@@ -3,6 +3,7 @@ from gameboard import *
 from globals import *
 from game import *
 from game_screen import *
+from card import card_manager
 
 
 class MainMenu(Menu):
@@ -159,10 +160,9 @@ class DeckBuilder(Page):
 
         # Create Card Objects
         cards = []
-        for row in card_dictionary:
+        for name, data in card_manager.data.items():
             try:
-                data = card_dictionary[row]
-                c = load_card(data['name'], None)
+                c = card_manager.load_card(data['name'], None)
                 c.location = 'collection'
 
                 if c.include:
@@ -276,9 +276,8 @@ class DeckBuilder(Page):
                                 if c.name in self.decks[0].card_names:
                                     self.decks[0].card_names.remove(c.name)
 
-    def enter(self, __):
-        global card_dictionary
-        card_dictionary = import_card_library()
+    def enter(self, _):
+        card_manager.get_changes()
 
     def update_deck_summary(self):
         pass
@@ -288,19 +287,13 @@ class DeckBuilder(Page):
         deck_dictionary = import_decks()
 
     def update_cards(self):
-        try:
-            trial_dictionary = import_card_library()
-            global card_dictionary
-            if trial_dictionary != card_dictionary:
-                card_dictionary = trial_dictionary
-                for key, cards in self.color_groups.items():
-                    for c in cards:
-                        data = card_dictionary[c.name]
-                        for attr in data:
-                            c.__dict__[attr] = data[attr]
-                self.sort_display_cards()
-        except PermissionError:
-            pass
+        if card_manager.get_changes():
+            for group, contents in self.color_groups.items():
+                for c in contents:
+                    data = card_manager.data[c.name]
+                    for name, value in data.items():
+                        setattr(c, name, value)
+            self.sort_display_cards()
 
     def update_positions(self, window):
         if self.loop_counter == 60:
@@ -323,7 +316,7 @@ class DeckBuilder(Page):
 
             for name in self.decks[0].card_names + stats_cards:
                 if name not in current_names:
-                    new = load_card(name)
+                    new = card_manager.load_card(name)
                     new.size = 'summary'
                     new.is_static = True
                     new.resize()

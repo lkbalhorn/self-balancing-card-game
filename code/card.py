@@ -1,5 +1,5 @@
 import random
-import time  # For troubleshooting performance
+import time
 import os
 import json
 
@@ -123,7 +123,7 @@ class Card(Sprite):
         return simple_dict
 
     def decode(self, simple_dict):
-        new = load_card(simple_dict['name'])
+        new = card_manager.load_card(simple_dict['name'])
         for attr in self.key_traits:
             new.__dict__[attr] = simple_dict[attr]
         return new
@@ -487,105 +487,113 @@ class Card(Sprite):
         return new
 
 
-def import_card_library():
-    # Excel version - found on master server only
-    if os.path.isfile('../data/SBCCG_Card_library.xlsx'):
-        wb = xlrd.open_workbook('../data/SBCCG_Card_library.xlsx')
+class CardManager:
+    def __init__(self, master_path, local_path):
+        self.master_path = master_path  # Excel data - found on master server only
+        self.local_path = local_path  # JSON data - found on server and client
+        self.raw_data = {}
+        self.data = {}
+        self.last_update = None
+        self.load_card_data()
 
+    def get_changes(self):
+        active_path = self.master_path if os.path.isfile(self.master_path) else self.local_path
+        if os.path.getmtime(active_path) > self.last_update:
+            self.load_card_data()
+            return True
+        return False 
+
+    def load_card_data(self):
+        self.last_update = time.time()
+        if os.path.isfile(self.master_path):
+            wb = xlrd.open_workbook(self.master_path)
+
+            for s in range(wb.nsheets):
+                sheet = wb.sheet_by_index(s)
+                data = [[sheet.cell_value(row, col)
+                         for col in range(sheet.ncols)]
+                        for row in range(sheet.nrows)
+                        if sheet.cell_value(row, 3)]
+                header_row = [row for row in data if 'Name' in row][0]
+                data.remove(header_row)
+
+                if sheet.name == 'Cards':
+                    n_cards = len(data)
+                    for c in range(n_cards):
+                        new_card = dict(zip(header_row, data[c]))
+                        self.raw_data[new_card['Name']] = new_card
+                    self.sanitize_card_data()
+
+                    with open('../data/SBCCG_Card_library.json', "w") as write_file:
+                        json.dump(self.data, write_file)
+        elif os.path.isfile('../data/SBCCG_Card_library.json'):
+            with open('../data/SBCCG_Card_library.json', "r") as read_file:
+                self.data = json.load(read_file)
+
+    def sanitize_card_data(self):
+        """Sets raw data to appropriate names and data types"""
         card_dictionary = {}
-        raw_card_dictionary = {}
+        for name, data in self.raw_data.items():
+            self.data[name] = {
+                'name': data['Name'],
+                'long_name': data['LongName'] if data['LongName'] != '' else data['Name'],
+                'effect_class': data['EffectClass'] if data['EffectClass'] else False,
+                'color_name': data['Class'],
+                'color': Colors[data['Class']] if data['Class'] else (0, 0, 0),
+                'type': data['Type'],
+                'cost': int(data['Cost']) if data['Cost'] != '' else None,
+                'starting_cost': int(data['Cost']) if data['Cost'] != '' else None,
+                'attack': int(data['Attack']) if data['Attack'] != '' else None,
+                'starting_attack': int(data['Attack']) if data['Attack'] != '' else None,
+                'health': int(data['Health']) if data['Health'] != '' else None,
+                'starting_health': int(data['Health']) if data['Health'] != '' else None,
+                'max_health': int(data['Health']) if data['Health'] != '' else None,
+                'amount': int(data['Amount']) if data['Amount'] != '' else None,
+                'starting_amount': int(data['Amount']) if data['Amount'] != '' else None,
+                'ability_cost': int(data['AbilityCost']) if data['AbilityCost'] != '' else 0,
+                'starting_ability_cost': int(data['AbilityCost']) if data['AbilityCost'] != '' else 0,
+                'priority': float(data['Priority']) if data['Priority'] != '' else 0,
+                'handicap': float(data['Handicap']) if data['Handicap'] != '' else None,
+                'special_text': data['Text'],
+                'special': data['Keywords'].split(' ') if [data['Keywords']] != '' else [],
+                'starting_special': data['Keywords'].split(' ') if [data['Keywords']] != '' else [],
+                'active_locations': data['ActiveLocations'].split(' ') if [data['ActiveLocations']] != '' else [],
+                'tags': data['Tags'].split(' ') if data['Tags'] != '' else [],
+                'starting_tags': data['Tags'].split(' ') if data['Tags'] != '' else [],
+                'n_hand_targets': int(data['HandTargets']) if data['HandTargets'] != '' else 0,
+                'n_board_targets': int(data['BoardTargets']) if data['BoardTargets'] != '' else 0,
+                'set': int(data['Set']) if data['Set'] else 5,
+                'filename': data['Filename'],
+                'include': True if data['Include'] == 'Yes' else False
+            }
 
-        for s in range(wb.nsheets):
-            sheet = wb.sheet_by_index(s)
-            data = [[sheet.cell_value(row, col)
-                     for col in range(sheet.ncols)]
-                    for row in range(sheet.nrows)
-                    if sheet.cell_value(row, 3)]
-            header_row = [row for row in data if 'Name' in row][0]
-            data.remove(header_row)
+    def load_card(self, short_name, player=False):
+        import functools
+        import sys
 
-            if sheet.name == 'Cards':
-                n_cards = len(data)
-                for c in range(n_cards):
-                    new_card = dict(zip(header_row, data[c]))
-                    raw_card_dictionary[new_card['Name']] = new_card
-                card_dictionary = sanitize_card_library(raw_card_dictionary)
+        if short_name in self.data:
+            data = self.data[short_name]
+        else:
+            print('Error loading card %s' % short_name)
+            data = self.data['ErrorCard']
+            data['text'] = short_name
 
-                with open('../data/SBCCG_Card_library.json', "w") as write_file:
-                    json.dump(card_dictionary, write_file)
-    elif os.path.isfile('../data/SBCCG_Card_library.json'):
-        with open('../data/SBCCG_Card_library.json', "r") as read_file:
-            card_dictionary = json.load(read_file)
-    return card_dictionary
+        try:
+            effect_class = data['effect_class']
+            subclass = functools.reduce(getattr, effect_class.split("."), sys.modules['card_effects'])
+            c = subclass(player)
+        except:
+            c = Card(player)
 
+        for attr in data:
+            c.__dict__[attr] = data[attr]
 
-def sanitize_card_library(raw_card_dictionary):
-    """ Converts loaded dictionary to actual attributes of card objects"""
-    card_dictionary = {}
-    for name, data in raw_card_dictionary.items():
-        card_dictionary[name] = {
-            'name':             data['Name'],
-            'long_name':        data['LongName'] if data['LongName'] != '' else data['Name'],
-            'effect_class':     data['EffectClass'] if data['EffectClass'] else False,
-            'color_name':       data['Class'],
-            'color':            Colors[data['Class']] if data['Class'] else (0, 0, 0),
-            'type':             data['Type'],
-            'cost':             int(data['Cost']) if data['Cost'] != '' else None,
-            'starting_cost':    int(data['Cost']) if data['Cost'] != '' else None,
-            'attack':           int(data['Attack']) if data['Attack'] != '' else None,
-            'starting_attack':  int(data['Attack']) if data['Attack'] != '' else None,
-            'health':           int(data['Health']) if data['Health'] != '' else None,
-            'starting_health':  int(data['Health']) if data['Health'] != '' else None,
-            'max_health': int(data['Health']) if data['Health'] != '' else None,
-            'amount':           int(data['Amount']) if data['Amount'] != '' else None,
-            'starting_amount':  int(data['Amount']) if data['Amount'] != '' else None,
-            'ability_cost':     int(data['AbilityCost']) if data['AbilityCost'] != '' else 0,
-            'starting_ability_cost': int(data['AbilityCost']) if data['AbilityCost'] != '' else 0,
-            'priority':         float(data['Priority']) if data['Priority'] != '' else 0,
-            'handicap':         float(data['Handicap']) if data['Handicap'] != '' else None,
-            'special_text':     data['Text'],
-            'special':          data['Keywords'].split(' ') if [data['Keywords']] != '' else [],
-            'starting_special': data['Keywords'].split(' ') if [data['Keywords']] != '' else [],
-            'active_locations': data['ActiveLocations'].split(' ') if [data['ActiveLocations']] != '' else [],
-            'tags':             data['Tags'].split(' ') if data['Tags'] != '' else [],
-            'starting_tags':    data['Tags'].split(' ') if data['Tags'] != '' else [],
-            'n_hand_targets':   int(data['HandTargets']) if data['HandTargets'] != '' else 0,
-            'n_board_targets':  int(data['BoardTargets']) if data['BoardTargets'] != '' else 0,
-            'set':              int(data['Set']) if data['Set'] else 5,
-            'filename':         data['Filename'],
-            'include':          True if data['Include'] == 'Yes' else False
-        }
-    return card_dictionary
+        return c
 
 
-# card_dictionary is a mutable global variable
-card_dictionary = import_card_library()
+master_data_path = '../data/SBCCG_Card_library.xlsx'
+local_data_path = '../data/SBCCG_Card_library.json'
+card_manager = CardManager(master_data_path, local_data_path)
 
 
-def save_card_data(card_dictionary):
-    with open('../data/SBCCG_Card_library.json', "w") as write_file:
-        json.dump(card_dictionary, write_file)  # Using global card_dictionary
 
-
-def load_card(short_name, player=False):
-    import functools
-    import sys
-
-    if short_name in card_dictionary:
-        data = card_dictionary[short_name]
-    else:
-        print('Error loading card %s' % short_name)
-        data = card_dictionary['ErrorCard']
-        data['text'] = short_name
-
-    try:
-        effect_class = data['effect_class']
-        subclass = functools.reduce(getattr, effect_class.split("."), sys.modules['card_effects'])
-        c = subclass(player)
-    except:
-        c = Card(player)
-
-    for attr in data:
-        c.__dict__[attr] = data[attr]
-
-    return c

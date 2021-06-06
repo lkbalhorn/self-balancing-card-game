@@ -5,6 +5,7 @@ from globals import *
 from sprite import *
 import csv
 import json
+from card import card_manager
 
 
 class Player(Sprite):
@@ -387,7 +388,7 @@ def import_decks():
         for key, deck in deck_dictionary.items():
             deck['id'] = str(deck['id'])
             deck['last_access'] = int(deck['last_access'])
-            deck['card_names'] = [c for c in deck['card_names'] if c in card_dictionary]
+            deck['card_names'] = [c for c in deck['card_names'] if c in card_manager.data]
             deck['wins'] = int(deck['wins'])
             deck['losses'] = int(deck['losses'])
             wins, losses = int(deck['wins']), int(deck['losses'])

@@ -3,6 +3,7 @@ from gameboard import *
 from game import *
 import time
 import json
+from card import card_manager
 
 
 class WebPlayer(Sprite):
@@ -302,7 +303,7 @@ class GameScreen(Page):
                             self.last_action_card = Card()
                             # self.last_action_card.name = 'Hero'
                         else:
-                            self.last_action_card = load_card(self.last_action.active_card.name)
+                            self.last_action_card = card_manager.load_card(self.last_action.active_card.name)
                         self.last_action_card.size = 'big'
                         self.last_action_card.status = 'display'
                         self.last_action_card.is_card = False  # To keep it big.  A bit crude but let's see if it works

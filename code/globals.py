@@ -55,21 +55,6 @@ Colors = {'Neutral':(200, 200, 225),
           'Handicap': (150, 150, 150)
           }
 
-def import_card_library_old():
-    import csv
-    card_dictionary = {}
-    with open('../csv/SBCCG_Card_library.csv', newline='') as csvfile:
-        table = csv.reader(csvfile, dialect = 'excel')
-        for i, row in enumerate(table):
-            if i == 0:
-                keys = [i for i in row]
-                continue
-            new_card = dict(zip(keys, row))
-            card_dictionary[new_card['Name']] = new_card
-
-    return card_dictionary
-
-
 
 # Import Tags
 path = '../media/tags'

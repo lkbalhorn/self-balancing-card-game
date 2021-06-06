@@ -5,6 +5,7 @@
 # of card.
 
 from card import *
+from card import card_manager
 import random
 from globals import *
 import sys
@@ -402,7 +403,7 @@ class SummonNewCard(BasicAction):
         player = self.target
         open_space = player.spaceboard.random_open_space()
         if open_space:
-            new = load_card(self.string, player)
+            new = card_manager.load_card(self.string, player)
             new.move_anywhere(open_space)
             new.status = 'new'
 
@@ -412,7 +413,7 @@ class AddNewToDeck(BasicAction):
     def resolve(self):
         player = self.target
         deck = player.deck
-        new = load_card(self.string, player)
+        new = card_manager.load_card(self.string, player)
         new.move_anywhere(deck, position=self.flag)
 
 
@@ -426,7 +427,7 @@ class AddNewToHand(BasicAction):
     def resolve(self):
         player = self.target
         hand = player.hand
-        new = load_card(self.string, player)
+        new = card_manager.load_card(self.string, player)
         new.move_anywhere(hand)
 
 
@@ -434,7 +435,7 @@ class AddNewToEmblems(BasicAction):
     # Target should be a player
     def resolve(self):
         player = self.target
-        new = load_card(self.string, player)
+        new = card_manager.load_card(self.string, player)
         new.move_anywhere(player.Emblemboard)
 
 
@@ -443,7 +444,7 @@ class TransformCard(BasicAction):
     def resolve(self):
         player = self.target.player
         space = self.target.space
-        new = load_card(self.string, player)
+        new = card_manager.load_card(self.string, player)
         self.target.move_anywhere(self.target.player.exile)
         new.move_anywhere(space)
         new.status = 'new'
@@ -888,7 +889,7 @@ class Muk(Card):
         return False
 
     def reaction(self, target, trigger):
-        new = load_card('Blob', self.player)
+        new = card_manager.load_card('Blob', self.player)
         return [SummonNear(self, new, player=self.player, column=self.space.column)]
 
 
@@ -903,7 +904,7 @@ class FifthBrigade(Card):
         column = targets[0].column
         basic_actions = []
         for i in range(5):
-            new = load_card('Soldier', self.player)
+            new = card_manager.load_card('Soldier', self.player)
             basic_actions.append(SummonNear(self, new, player=self.player, column=column))
         return basic_actions
 
@@ -919,7 +920,7 @@ class LivingBrambles(Card):
         column = targets[0].column
         basic_actions = []
         for i in range(3):
-            new = load_card('Bramble', self.player)
+            new = card_manager.load_card('Bramble', self.player)
             basic_actions.append(SummonNear(self, new, player=self.player, column=column))
         return basic_actions
 
@@ -929,7 +930,7 @@ class Spider(Card):
         column = targets[0].column
         basic_actions = []
         for i in range(2):
-            new = load_card('Spiderling', self.player)
+            new = card_manager.load_card('Spiderling', self.player)
             basic_actions.append(SummonNear(self, new, player=self.player, column=column))
         return basic_actions
 
@@ -945,7 +946,7 @@ class ArcherWall(Card):
         column = targets[0].column
         basic_actions = []
         for i in range(5):
-            new = load_card('Archer', self.player)
+            new = card_manager.load_card('Archer', self.player)
             basic_actions.append(SummonNear(self, new, player=self.player, column=column))
         return basic_actions
 
@@ -1702,7 +1703,7 @@ class MinorIllusion(Card):
         return False
 
     def ability(self, targets):
-        new = load_card('Illusion', self.player)
+        new = card_manager.load_card('Illusion', self.player)
         return [SummonCard(self, new, second_target=targets[0])]
 
 
