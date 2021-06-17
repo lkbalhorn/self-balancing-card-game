@@ -381,6 +381,59 @@ class Hero(Card):
     #     self.w, self.h = 150, 210
 
 
+class DeckList:
+    def __init__(self, data=None):
+        self.id = str(self.__id__)
+        self.cards = {}
+        self.stats = {'last_accessed': time.time(),
+                      'last_modified': time.time(),
+                      'wins': 0,
+                      'losses': 0}
+        self.key_attrs = ['id', 'cards', 'stats']
+        if data:
+            self.from_dict(data)
+
+    def to_dict(self):
+        return {name: getattr(self, name) for name in self.key_attrs}
+
+    def from_dict(self, data):
+        for name in self.key_attrs:
+            setattr(self, name, data[name])
+
+    def add_card(self, name):
+        if name in self.cards:
+            self.cards[name] += 1
+        else:
+            self.cards[name] = 1
+
+    def remove_card(self, name):
+        if name in self.cards:
+            if self.cards[name] > 1:
+                self.cards[name] -= 1
+            else:
+                self.cards.pop(name, 0)
+
+
+class DeckManager:
+    def __init__(self, _path):
+        self.path = _path
+        self.raw_data = {}
+        self.data = {}
+
+        self.string_values = ['id', 'name']
+        self.int_values = ['wins', 'losses', 'n_games']
+        self.float_values = ['strength']
+
+    def load_deck_data(self):
+        with open(self.path) as infile:
+            raw_data = json.load(infile)
+            self.data = {}
+            for key, deck in raw_data.items():
+                for name in self.string_values:
+                    deck[name] = str(deck[name])
+
+
+
 def import_decks():
     with open('../data/Decklist.txt') as infile:
         global deck_dictionary

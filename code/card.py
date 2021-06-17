@@ -2,14 +2,17 @@ import random
 import time
 import os
 import json
+import functools
+import sys
+import xlrd
 
 import pygame
 
-from sprite import *
-from globals import *
+import sprite
+import globals
 
 
-class Card(Sprite):
+class Card(sprite.Sprite):
     # This class represents a card, whether in the deck, in a hand, on the board, or
     # discarded
     def __init__(self, player=False):
@@ -157,22 +160,22 @@ class Card(Sprite):
 
         if self.size == 'summary':
             breaks = [30, 60, 270]
-            pygame.draw.rect(new_image, Colors['Mana'], [0, 0, 30, 30])
-            pygame.draw.rect(new_image, Colors['Handicap'], [30, 0, 60, 30])
+            pygame.draw.rect(new_image, globals.Colors['Mana'], [0, 0, 30, 30])
+            pygame.draw.rect(new_image, globals.Colors['Handicap'], [30, 0, 60, 30])
             pygame.draw.rect(new_image, self.color, [60, 0, self.w - 30, self.h])
             pygame.draw.rect(new_image, (150, 100, 150), [self.w - 30, 0, self.w, self.h])
-            pygame.draw.rect(new_image, Colors['Dark Blue'], [0, 0, self.w, self.h], 1)
+            pygame.draw.rect(new_image, globals.Colors['Dark Blue'], [0, 0, self.w, self.h], 1)
 
             buffer = -5
 
-            wrap_text_2(new_image, str(self.cost), 0, 2, breaks[0] - buffer, self.h - buffer,
-                        alignment='center', fontsize=20, font_color=(0, 0, 0))
-            wrap_text_2(new_image, '%.0f' % self.handicap, breaks[0], 2, breaks[1] - buffer, self.h - buffer,
-                        alignment='center', fontsize=20, font_color=(0, 0, 0))
-            wrap_text_2(new_image, self.long_name, breaks[1], 2, breaks[2] - buffer, self.h - buffer,
-                        alignment='center', fontsize=20, font_color=(0, 0, 0))
-            wrap_text_2(new_image, str(self.quantity), breaks[2], 2, self.w - buffer, self.h - buffer,
-                        alignment='center', fontsize=20, font_color=(0, 0, 0))
+            sprite.wrap_text_2(new_image, str(self.cost), 0, 2, breaks[0] - buffer, self.h - buffer,
+                               alignment='center', fontsize=20, font_color=(0, 0, 0))
+            sprite.wrap_text_2(new_image, '%.0f' % self.handicap, breaks[0], 2, breaks[1] - buffer, self.h - buffer,
+                               alignment='center', fontsize=20, font_color=(0, 0, 0))
+            sprite.wrap_text_2(new_image, self.long_name, breaks[1], 2, breaks[2] - buffer, self.h - buffer,
+                               alignment='center', fontsize=20, font_color=(0, 0, 0))
+            sprite.wrap_text_2(new_image, str(self.quantity), breaks[2], 2, self.w - buffer, self.h - buffer,
+                               alignment='center', fontsize=20, font_color=(0, 0, 0))
 
             return new_image, None
 
@@ -187,9 +190,9 @@ class Card(Sprite):
 
         # Set Fonts
         if self.size == 'big':
-            font_dictionary = BigFonts
+            font_dictionary = globals.BigFonts
         else:
-            font_dictionary = CardFonts
+            font_dictionary = globals.CardFonts
         cost_font = font_dictionary['cost']
         inner_cost_font = font_dictionary['cost inner']
         attack_font = font_dictionary['attack']
@@ -214,24 +217,24 @@ class Card(Sprite):
         if self.size == 'big':
             if self.type == 'Minion':
                 items = ['cost', 'attack', 'health', 'handicap', 'name', 'text', 'tags']
-                new_image.blit(CardTemplates['big'], (0, 0))
+                new_image.blit(globals.CardTemplates['big'], (0, 0))
             elif self.type == 'Structure':
                 items = ['cost', 'health', 'handicap', 'name', 'text', 'tags']
-                new_image.blit(CardTemplates['big structure'], (0, 0))
+                new_image.blit(globals.CardTemplates['big structure'], (0, 0))
             else:
                 items = ['cost', 'handicap', 'name', 'text', 'tags']
-                new_image.blit(CardTemplates['big spell'], (0, 0))
+                new_image.blit(globals.CardTemplates['big spell'], (0, 0))
         elif self.name == 'Hero':
             items = ['health', 'attack']
         elif self.location.type == 'hand':
             items = ['cost']
-            new_image.blit(CardTemplates['hand spell'], (0, 0))
+            new_image.blit(globals.CardTemplates['hand spell'], (0, 0))
         elif self.location.type == 'board':
             if self.type == 'Minion':
                 items = ['attack', 'health']
             elif self.type == 'Structure':
                 items = ['health']
-            new_image.blit(CardTemplates['board'], (0, 0))
+            new_image.blit(globals.CardTemplates['board'], (0, 0))
         elif self.location.type == 'tableau':
             if self.type == 'Item':
                 items = []
@@ -255,8 +258,8 @@ class Card(Sprite):
         # Draw Attack Label
         if 'attack' in items:
             if self.size == 'small':
-                pygame.draw.polygon(new_image, (200,100,100), chamfer(0, self.h,f*24,f*16,1,-1))
-                pygame.draw.polygon(new_image, (100,50,50), chamfer(0, self.h,f*24,f*16,1,-1), 2)
+                pygame.draw.polygon(new_image, (200,100,100), globals.chamfer(0, self.h,f*24,f*16,1,-1))
+                pygame.draw.polygon(new_image, (100,50,50), globals.chamfer(0, self.h,f*24,f*16,1,-1), 2)
             attack = str(self.attack)
             attack_label = attack_font.render(attack, 1, (0, 0, 0))
             new_image.blit(attack_label, (7 * f, self.h - 23 * f))
@@ -264,8 +267,8 @@ class Card(Sprite):
         # Draw health Label
         if 'health' in items:
             if self.size == 'small':
-                pygame.draw.polygon(new_image, (100,200,100), chamfer(self.w, self.h,f*24,f*16,-1,-1))
-                pygame.draw.polygon(new_image, (50,100,50), chamfer(self.w, self.h,f*24,f*16,-1,-1), 2)
+                pygame.draw.polygon(new_image, (100,200,100), globals.chamfer(self.w, self.h,f*24,f*16,-1,-1))
+                pygame.draw.polygon(new_image, (50,100,50), globals.chamfer(self.w, self.h,f*24,f*16,-1,-1), 2)
             health = str(self.health)
             health_label = health_font.render(health, 1, (0, 0, 0))
             new_image.blit(health_label, (self.w - health_label.get_rect()[2]/1.5 - 9*f, self.h - 23 * f))
@@ -284,8 +287,8 @@ class Card(Sprite):
             # points = [(self.w / 2, self.h / 2 + length + shift), (self.w / 2 - length, self.h / 2 + shift),
             #           (self.w / 2, self.h / 2 - length + shift), (self.w / 2 + length, self.h / 2 + shift)]
             points = [(0, self.h), (self.w, self.h), (self.w / 2, self.h - self.w / 2)]
-            pygame.draw.polygon(new_image, Colors['Mana'], points)
-            pygame.draw.polygon(new_image, shade(Colors['Mana']), points, 2)
+            pygame.draw.polygon(new_image, globals.Colors['Mana'], points)
+            pygame.draw.polygon(new_image, sprite.shade(globals.Colors['Mana']), points, 2)
             ability_cost = str(int(round(self.ability_cost)))
             ability_cost_label = cost_font.render(ability_cost, 1, (0, 0, 0))
             adjust = len(ability_cost)
@@ -302,12 +305,12 @@ class Card(Sprite):
         elif 'small name' in items:
             name = str(self.long_name)
             buffer = 10
-            wrap_text_2(new_image, name, buffer, buffer, self.w - buffer, self.h - buffer, fontsize=18)
+            sprite.wrap_text_2(new_image, name, buffer, buffer, self.w - buffer, self.h - buffer, fontsize=18)
 
         # Draw Effect Text
         if 'text' in items and self.special_text:
             buffer = 10
-            wrap_text_2(new_image, self.special_text, buffer, self.h / 2 + buffer + 10, self.w - buffer, self.h - buffer)
+            sprite.wrap_text_2(new_image, self.special_text, buffer, self.h / 2 + buffer + 10, self.w - buffer, self.h - buffer)
 
         # Draw Status Outline
         if self.is_target:
@@ -532,14 +535,14 @@ class CardManager:
 
     def sanitize_card_data(self):
         """Sets raw data to appropriate names and data types"""
-        card_dictionary = {}
+
         for name, data in self.raw_data.items():
             self.data[name] = {
                 'name': data['Name'],
                 'long_name': data['LongName'] if data['LongName'] != '' else data['Name'],
                 'effect_class': data['EffectClass'] if data['EffectClass'] else False,
                 'color_name': data['Class'],
-                'color': Colors[data['Class']] if data['Class'] else (0, 0, 0),
+                'color': globals.Colors[data['Class']] if data['Class'] else (0, 0, 0),
                 'type': data['Type'],
                 'cost': int(data['Cost']) if data['Cost'] != '' else None,
                 'starting_cost': int(data['Cost']) if data['Cost'] != '' else None,
@@ -568,9 +571,6 @@ class CardManager:
             }
 
     def load_card(self, short_name, player=False):
-        import functools
-        import sys
-
         if short_name in self.data:
             data = self.data[short_name]
         else:

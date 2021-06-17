@@ -1,4 +1,5 @@
-from client import Client, shade
+from client import Client
+from sprite import shade
 import pygame as pg
 
 
