@@ -328,7 +328,7 @@ class DeckBuilder(Page):
                 try:
                     c.quantity = card_quantities[c.name]
                 except KeyError:
-                    print('Key Error when Updating Card Quantities:', c.name)
+                    print('Key Error when Updating Card Quantities:', c.name, self.decks[0].contents, card_quantities)
 
             self.decks[0].contents.sort(key=lambda x: x.name)
             self.decks[0].contents.sort(key=lambda x: x.cost)

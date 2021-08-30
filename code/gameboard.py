@@ -383,22 +383,28 @@ class Hero(Card):
 
 class DeckList:
     def __init__(self, data=None):
-        self.id = str(self.__id__)
-        self.cards = {}
-        self.stats = {'last_accessed': time.time(),
-                      'last_modified': time.time(),
-                      'wins': 0,
-                      'losses': 0}
-        self.key_attrs = ['id', 'cards', 'stats']
+        self.id = str(id(self))
+        self.name = 'New Deck'
+        self.cards = {}  # Dict of str: int
+
+        self.last_accessed = time.time()
+        self.last_modified = time.time()
+        self.wins = 0
+        self.losses = 0
+
         if data:
             self.from_dict(data)
 
     def to_dict(self):
-        return {name: getattr(self, name) for name in self.key_attrs}
+        return {key: value for key, value in self.__dict__.items()}
 
     def from_dict(self, data):
-        for name in self.key_attrs:
-            setattr(self, name, data[name])
+        for key in self.__dict__:
+            try:
+                setattr(self, key, data[key])
+            except KeyError:
+                # Keep default value
+                pass
 
     def add_card(self, name):
         if name in self.cards:
@@ -431,7 +437,6 @@ class DeckManager:
             for key, deck in raw_data.items():
                 for name in self.string_values:
                     deck[name] = str(deck[name])
-
 
 
 def import_decks():
@@ -471,8 +476,6 @@ def get_recent_decks():
     recent_decks = [Deck(data=deck_dictionary[d]) for d in recent_ids]
     return recent_decks
 
-print(get_recent_decks())
-
 
 def export_decks(deck_dictionary):
     with open('../data/SBCCG_Deck_List.csv', newline='', mode='w') as csvfile:
@@ -492,6 +495,13 @@ def flat(*args):
             items.append(a)
     return items
 
+
+if __name__ == '__main__':
+    test = DeckList()
+    test_2 = json.dumps(test.to_dict())
+    print(test_2)
+    test_3 = DeckList(data=json.loads(test_2))
+    print('Done')
 
 
 
