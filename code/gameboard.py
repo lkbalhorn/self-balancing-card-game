@@ -382,8 +382,8 @@ class Hero(Card):
 
 
 class DeckList:
-    def __init__(self, data=None):
-        self.id = str(id(self))
+    def __init__(self):
+        self.id = None
         self.name = 'New Deck'
         self.cards = {}  # Dict of str: int
 
@@ -391,9 +391,6 @@ class DeckList:
         self.last_modified = time.time()
         self.wins = 0
         self.losses = 0
-
-        if data:
-            self.from_dict(data)
 
     def to_dict(self):
         return {key: value for key, value in self.__dict__.items()}
@@ -423,20 +420,63 @@ class DeckList:
 class DeckManager:
     def __init__(self, _path):
         self.path = _path
-        self.raw_data = {}
-        self.data = {}
+        self.decks = {'default': DeckList()}
+        self.main_deck = 'default'
+        self.second_deck = 'default'
 
-        self.string_values = ['id', 'name']
-        self.int_values = ['wins', 'losses', 'n_games']
-        self.float_values = ['strength']
+    def to_dict(self):
+        """Converts data to json-serializable format"""
+        new = {}
+        for key, value in self.__dict__.values():
+            if key in ['path', 'decks']:
+                continue
+            else:
+                new[key] = value
+        new['decks'] = {name: deck.to_dict() for name, deck in self.decks.items()}
+        return new
 
-    def load_deck_data(self):
-        with open(self.path) as infile:
-            raw_data = json.load(infile)
-            self.data = {}
-            for key, deck in raw_data.items():
-                for name in self.string_values:
-                    deck[name] = str(deck[name])
+    def from_dict(self, data):
+        """Loads data from json-serializable format"""
+        for key, value in data.items():
+            if key in ['path', 'decks']:
+                continue
+            else:
+                self.__setattr__(key, value)
+        self.decks = {name: DeckList().from_dict(data) for name, data in data['decks'].items()}
+
+    def load(self):
+        try:
+            with open(self.path, 'r') as infile:
+                raw_data = json.load(infile)
+            self.from_file(raw_data)
+            return self
+        except OSError:
+            # File doesn't exist - keep defaults
+            return self
+
+    def save(self):
+        with open(self.path, 'w') as outfile:
+            json.dump(self.to_dict(), outfile)
+
+    def select_deck(self, deck_id):
+        self.second_deck = self.main_deck
+        self.main_deck = deck_id
+
+    def new_deck(self):
+        new = DeckList()
+        for i in range(1000):
+            if str(i) not in self.decks:
+                new.id = str(i)
+                self.decks[new.id] = new
+                self.select_deck(new.id)
+                return True
+        return False
+
+    def delete_deck(self, deck_id):
+        self.decks.pop(deck_id)
+        self.save()
+
+    # To edit a deck, use methods of the DeckList itself and save DeckManager when complete.
 
 
 def import_decks():
