@@ -10,6 +10,20 @@ import sys
 from card import card_manager
 
 
+class GameRouter:
+    """Creates an API for the game that should be general for all turn-based games."""
+    def __init__(self, get_options, check_option, choose_option):
+        # Attributes stored by this function
+        self.players = []  # List of ID strings
+        self.history = []
+        self.trial_moves = []  # Dict of lists, where keys are ID strings
+        # how to do simultaneous actions, like drafting?
+
+        self.get_options = get_options  # Function
+        self.check_option = check_option
+        self.choose_option = choose_option
+
+
 # Create server object for both online and local play
 class Game:
     def __init__(self):
@@ -24,7 +38,6 @@ class Game:
         self.primary_action = None
         self.last_card_played = None
         self.rule_cards = rule_cards
-
 
         self.id = id(self)
         self.web_players = []
@@ -158,9 +171,8 @@ class Game:
         decoded_actions = [Action().decode(i, object_dict) for i in player_actions]
         self.resolve_actions(decoded_actions)
 
-
     def resolve_actions(self, player_actions):
-        basic_actions, reactions, next_layer = [],[],[]
+        basic_actions, reactions, next_layer = [], [], []
         self.primary_action = None
 
         # Take Snapshot
