@@ -16,7 +16,7 @@ class GameRouter:
         # Attributes stored by this function
         self.players = []  # List of ID strings
         self.history = []
-        self.trial_moves = []  # Dict of lists, where keys are ID strings
+        self.trial_moves = []  # Dict of lists, where keys are player ID strings
         # how to do simultaneous actions, like drafting?
 
         self.get_options = get_options  # Function

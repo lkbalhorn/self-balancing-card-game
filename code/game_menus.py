@@ -1,9 +1,9 @@
 from menus import *
-from gameboard import *
 from globals import *
 from game import *
 from game_screen import *
 from card import card_manager
+from gameboard import DeckManager
 
 
 class MainMenu(Menu):
