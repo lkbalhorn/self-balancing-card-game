@@ -464,13 +464,11 @@ class DeckManager:
 
     def new_deck(self):
         new = DeckList()
-        for i in range(1000):
+        for i in range(10000):
             if str(i) not in self.decks:
                 new.id = str(i)
                 self.decks[new.id] = new
                 self.select_deck(new.id)
-                return True
-        return False
 
     def delete_deck(self, deck_id):
         self.decks.pop(deck_id)
