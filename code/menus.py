@@ -7,7 +7,6 @@ class Menu:
     def __init__(self, window):
         self.pages = {}
         self.current_page = False
-        self.chosen_values = {}
         self.window = window
         self.server = '127.00.00.01'
         self.screen_name = 'Player 1'

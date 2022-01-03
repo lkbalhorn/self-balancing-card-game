@@ -233,23 +233,10 @@ class Deck(Location):
         self.font_color = (200, 200, 255)
 
         if data:
-            if data is list:
-                pass
-                # self.id = data[0]
-                # self.name = data[1]
-                # self.text = data[1]
-                # self.wins = data[2]
-                # self.losses = data[3]
-                # self.strength = data[4]
-                # self.last_access = data[5]
-                # self.card_names = data[6:]
-            else:
-                for name in self.saved_attributes:
-                    if name in data:
-                        self.__setattr__(name, data[name])
-                self.text = self.name
-                self.card_names = [i for i in self.card_names if i is not None]
-        self.n_games = self.wins + self.losses
+            self.contents = data.get_card_list()
+            for key in self.__dict__:
+                if key in data.__dict__:
+                    setattr(self, key, getattr(data, key))
 
     def update_text(self):
         star_cards = [c for c in self.contents if 'Star' in c.special]
@@ -262,7 +249,6 @@ class Deck(Location):
             self.average_mana = 0
         self.total_handicap = sum(c.handicap * c.quantity for c in self.contents)
         self.n_start_cards = 5 - (self.total_handicap - 150) / 20
-
 
     def draw_image(self, artwork=False, template=False, extras=[]):
         # Update Text
@@ -310,17 +296,6 @@ class Deck(Location):
                         alignment='right', fontsize=30, font_color=Colors['Light Blue'])
 
         return new_image, template
-
-    def save(self, delete=False):
-        deck_dictionary = import_decks()
-        if delete:
-            if self.id in deck_dictionary:
-                del deck_dictionary[self.id]
-        else:
-            data = self.to_dict()
-            deck_dictionary[self.id] = data
-        with open('../data/Decklist.txt', 'w') as outfile:
-            json.dump(deck_dictionary, outfile)
 
     def to_dict(self):
         return {attr: self.__getattribute__(attr) for attr in self.saved_attributes}
@@ -416,19 +391,28 @@ class DeckList:
             else:
                 self.cards.pop(name, 0)
 
+    def get_card_list(self):
+        """Expands the dictionary of card types and quantities into a list with one entry
+        for each card."""
+        card_list = []
+        for key, value in self.cards.items():
+            card_list.extend([key]*value)
+        return card_list
+
 
 class DeckManager:
     def __init__(self, _path):
         self.path = _path
-        self.decks = {'default': DeckList()}
-        self.main_deck = 'default'
-        self.second_deck = 'default'
+        self.decks = {}  # str: DeckList object
+        self.chosen_keys = []  # List of str, Length 2
+        self.chosen_decks = []  # List of DeckList objects, Length 2
+        self.load()
 
     def to_dict(self):
-        """Converts data to json-serializable format"""
+        """Returns serializable dictionary with all data needed to reconstruct this object"""
         new = {}
         for key, value in self.__dict__.values():
-            if key in ['path', 'decks']:
+            if key in ['path', 'decks', 'chosen_decks']:
                 continue
             else:
                 new[key] = value
@@ -436,31 +420,47 @@ class DeckManager:
         return new
 
     def from_dict(self, data):
-        """Loads data from json-serializable format"""
+        """Reconstructs object from serializable dictionary"""
         for key, value in data.items():
-            if key in ['path', 'decks']:
+            if key in ['path', 'decks', 'chosen_decks']:
                 continue
             else:
                 self.__setattr__(key, value)
         self.decks = {name: DeckList().from_dict(data) for name, data in data['decks'].items()}
-
-    def load(self):
-        try:
-            with open(self.path, 'r') as infile:
-                raw_data = json.load(infile)
-            self.from_file(raw_data)
-            return self
-        except OSError:
-            # File doesn't exist - keep defaults
-            return self
+        self.chosen_decks = [self.decks[key] for key in self.chosen_keys]
 
     def save(self):
+        """"Saves data needed to reconstruct this object to disk"""
         with open(self.path, 'w') as outfile:
             json.dump(self.to_dict(), outfile)
 
-    def select_deck(self, deck_id):
-        self.second_deck = self.main_deck
-        self.main_deck = deck_id
+    def load(self):
+        """Reconstructs object using data from disk"""
+        try:
+            with open(self.path, 'r') as infile:
+                raw_data = json.load(infile)
+            self.from_dict(raw_data)
+        except OSError:
+            # File doesn't exist - keep defaults
+            pass
+        self.clean()
+
+    def clean(self):
+        """Ensures object has minimum data to function"""
+        if not self.decks:
+            self.decks['default'] = DeckList()
+        if len(self.chosen_decks) != 2:
+            self.chosen_keys= ['temp', 'temp']
+            self.chosen_decks = ['temp', 'temp']
+        for i, value in enumerate(self.chosen_keys):
+            if value not in self.decks:
+                new_key = list(self.decks.keys())[0]
+                self.chosen_keys[i] = new_key
+                self.chosen_decks[i] = self.decks[new_key]
+
+    def select_deck(self, deck_id, position=0):
+        self.chosen_keys[position] = deck_id
+        self.chosen_decks[position] = self.decks[deck_id]
 
     def new_deck(self):
         new = DeckList()
@@ -472,54 +472,10 @@ class DeckManager:
 
     def delete_deck(self, deck_id):
         self.decks.pop(deck_id)
+        self.clean()
         self.save()
 
     # To edit a deck, use methods of the DeckList itself and save DeckManager when complete.
-
-
-def import_decks():
-    with open('../data/Decklist.txt') as infile:
-        global deck_dictionary
-        deck_dictionary = json.load(infile)
-        for key, deck in deck_dictionary.items():
-            deck['id'] = str(deck['id'])
-            deck['last_access'] = int(deck['last_access'])
-            deck['card_names'] = [c for c in deck['card_names'] if c in card_manager.data]
-            deck['wins'] = int(deck['wins'])
-            deck['losses'] = int(deck['losses'])
-            wins, losses = int(deck['wins']), int(deck['losses'])
-            deck['n_games'] = wins + losses
-            deck['strength'] = (10 + wins - losses) / (20 + wins + losses)
-
-        while len(deck_dictionary) < 2:
-            key, deck = Deck().to_dict()
-            deck_dictionary[key] = deck
-
-    with open('../data/Decklist.txt') as infile:
-        deck_dictionary = json.load(infile)
-
-    return deck_dictionary
-
-
-deck_dictionary = import_decks()
-
-
-def get_recent_decks():
-    while len(deck_dictionary) < 2:
-        new = Deck()
-        deck_dictionary[new.id] = new
-    deck_times = [(id, deck_dictionary[id]['last_access']) for id in deck_dictionary]
-    recent_deck_tuples = sorted(deck_times, key=lambda x: x[1], reverse=True)
-    recent_ids = [d[0] for d in recent_deck_tuples]
-    recent_decks = [Deck(data=deck_dictionary[d]) for d in recent_ids]
-    return recent_decks
-
-
-def export_decks(deck_dictionary):
-    with open('../data/SBCCG_Deck_List.csv', newline='', mode='w') as csvfile:
-        writer = csv.writer(csvfile, delimeter=',')
-        for key in deck_dictionary:
-            writer.writerow([key] + deck_dictionary[key])
 
 
 def flat(*args):

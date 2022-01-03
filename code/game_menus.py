@@ -12,7 +12,7 @@ class MainMenu(Menu):
         title_filename = 'main title 4.jpg'
         background_filename = 'Island in a Bottle TEMP cropped.jpg'
         game_background_filename = 'Huangshan_Valley.jpg'
-        self.chosen_values['Decks'] = get_recent_decks()[:2]  # Contains Deck Objects, not ids or dicts
+        self.dm = DeckManager('deck_data.txt')
         self.deck_chooser = DeckChooser('Deck Chooser', self, 'main', background_filename)
         self.game_screen = GameScreen('Game Screen', self, 'main', game_background_filename)
         self.deck_builder = DeckBuilder('Deck Builder', self, 'main', background_filename)
@@ -57,7 +57,7 @@ class MainMenu(Menu):
                     elif h.name == 'Start Game':
                         game = Game()
                         game.setup_game()
-                        game.deal_cards(self.chosen_values['Decks'])
+                        game.deal_cards(self.dm.chosen_decks)
                         game.is_local = True
                         self.set_page(self.game_screen.name, come_back=True)
                         self.game_screen.local_game = game
@@ -68,25 +68,14 @@ class MainMenu(Menu):
         # Update Sprite Text for Choices
         for h in self.current_page.view():
             if h.name in ['Choose Player 1 Deck', 'deck_choice']:
-                h.text = self.chosen_values['Decks'][0].name
+                h.text = self.dm.chosen_decks[0].name
             elif h.name in ['Choose Player 2 Deck']:
-                h.text = self.chosen_values['Decks'][1].name
-
-    def set_deck(self, id=False, position=0):
-        id = str(id)  # I thought id values were supposed to be str - look into this
-        if id and id in deck_dictionary:
-            deck_data = deck_dictionary[id]
-            deck = Deck(data=deck_data)
-        else:
-            deck = get_recent_decks()[position]
-        self.chosen_values['Decks'][position] = deck
+                h.text = self.dm.chosen_decks[1].name
 
 
 class DeckChooser(Page):
     def __init__(self, name, host, parent, background, groups=[]):
         super().__init__(name, host, parent, background, groups=[])
-        self.host.set_deck()
-        self.host.set_deck(position=1)
         self.active_position = 0
         self.mode = 'recent'
         self.all_decks = []
@@ -114,12 +103,7 @@ class DeckChooser(Page):
         self.update_decks()
 
     def update_decks(self):
-        self.all_decks = []
-        deck_dict = import_decks()
-        for id in deck_dict:
-            data = deck_dict[id]
-            new = Deck(data=data)
-            self.all_decks.append(new)
+        self.all_decks = [Deck(data=value) for key, value in self.host.dm.decks.items()]
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
@@ -133,7 +117,7 @@ class DeckChooser(Page):
                             i.status = False
                         h.status = 'active'
                     elif h.type == 'deck':
-                        self.host.set_deck(id=h.id, position=self.active_position)
+                        self.host.dm.select_deck(h.id, position=self.active_position)
                         self.host.set_page(self.parent)
 
     def update_positions(self, window):
@@ -155,7 +139,7 @@ class DeckBuilder(Page):
 
         self.current_mode = 'idle'
         self.loop_counter = 0
-        self.decks = self.host.chosen_values['Decks']
+        self.decks = self.host.dm.decks
         self.set = 2  # Cards at or below set 2 are visible in the DeckBuilder
 
         # Create Card Objects
@@ -205,17 +189,18 @@ class DeckBuilder(Page):
         self.deck_background = Sprite(layer=-5, w=300, h=750, name='DeckBackground')
         self.deck_background_group = Group('deck_background', self, [self.deck_background],
                                            0, 1, -5, 1, 1, 0, low=5, spacing=1)
+        if False:
+            # This is temporary while rebuilding deckbuilder
+            self.deck_image = self.decks[0]
+            self.deck_summary = Group('deck_summary', self, [self.deck_image],
+                                           0, 1, -5, 1, 1, 0, low=5, spacing=1)
+            self.deck_image.w = 300
+            self.deck_image.h = 100
 
-        self.deck_image = self.decks[0]
-        self.deck_summary = Group('deck_summary', self, [self.deck_image],
-                                       0, 1, -5, 1, 1, 0, low=5, spacing=1)
-        self.deck_image.w = 300
-        self.deck_image.h = 100
-
-        # Create sublabels for deck summary
-        self.stats_label = Sprite(w=300, h=45, text='Stats', font_size=30)
-        self.star_label = Sprite(w=300, h=45, text='Head Start', font_size=30)
-        self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
+            # Create sublabels for deck summary
+            self.stats_label = Sprite(w=300, h=45, text='Stats', font_size=30)
+            self.star_label = Sprite(w=300, h=45, text='Head Start', font_size=30)
+            self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
 
     def sort_display_cards(self):
         #
@@ -262,7 +247,7 @@ class DeckBuilder(Page):
                                 self.decks[0].card_names = []
                         elif c.name == 'Cancel Changes':
                             # Reload current deck
-                            self.host.set_deck(id=self.decks[0].id, position=0)
+                            self.host.dm.load()
                         elif c.name == 'Delete Deck':
                             self.host.chosen_values['Decks'][0].save(delete=True)
                             self.host.chosen_values['Decks'][0] = get_recent_decks()[-1]
@@ -388,7 +373,7 @@ class GameLobby(Page):
         self.server_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='server_choice',
                                     text=self.host.server, is_text_box=True)
         deck_choice = Sprite(color=Colors['Wood'], w=300, h=50, name='deck_choice',
-                             text=self.host.chosen_values['Decks'][0].name)
+                             text=self.host.dm.chosen_decks[0].name)
         play_right.sprites = [self.name_choice, self.server_choice, deck_choice]
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
