@@ -117,7 +117,7 @@ class DeckChooser(Page):
                             i.status = False
                         h.status = 'active'
                     elif h.type == 'deck':
-                        self.host.dm.select_deck(h.id, position=self.active_position)
+                        self.host.dm.select_deck(h.deck_list_id, position=self.active_position)
                         self.host.set_page(self.parent)
 
     def update_positions(self, window):
@@ -189,18 +189,17 @@ class DeckBuilder(Page):
         self.deck_background = Sprite(layer=-5, w=300, h=750, name='DeckBackground')
         self.deck_background_group = Group('deck_background', self, [self.deck_background],
                                            0, 1, -5, 1, 1, 0, low=5, spacing=1)
-        if False:
-            # This is temporary while rebuilding deckbuilder
-            self.deck_image = self.decks[0]
-            self.deck_summary = Group('deck_summary', self, [self.deck_image],
-                                           0, 1, -5, 1, 1, 0, low=5, spacing=1)
-            self.deck_image.w = 300
-            self.deck_image.h = 100
 
-            # Create sublabels for deck summary
-            self.stats_label = Sprite(w=300, h=45, text='Stats', font_size=30)
-            self.star_label = Sprite(w=300, h=45, text='Head Start', font_size=30)
-            self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
+        # self.deck_image = Deck(data=self.decks[0])
+        # self.deck_summary = Group('deck_summary', self, [self.deck_image],
+        #                                0, 1, -5, 1, 1, 0, low=5, spacing=1)
+        # self.deck_image.w = 300
+        # self.deck_image.h = 100
+
+        # Create sublabels for deck summary
+        self.stats_label = Sprite(w=300, h=45, text='Stats', font_size=30)
+        self.star_label = Sprite(w=300, h=45, text='Head Start', font_size=30)
+        self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
 
     def sort_display_cards(self):
         #
@@ -211,8 +210,7 @@ class DeckBuilder(Page):
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
-        self.decks[0].is_text_box = True
-        global deck_dicitonary
+        # self.decks[0].is_text_box = True
 
         for e in events:
             if e.type == pygame.KEYDOWN:
@@ -237,7 +235,8 @@ class DeckBuilder(Page):
                     elif c.name == 'Load Deck':
                         self.host.set_page(self.host.deck_chooser.name, come_back=True)
                         self.host.deck_chooser.active_position = 0  # First deck being chosen
-                    elif self.decks[0]:
+                    # elif self.decks[0]:
+                    if False:
                         if c.name == 'Save Deck':
                             self.decks[0].save()
                             self.host.pages['Deck Chooser'].update_decks()
@@ -267,10 +266,6 @@ class DeckBuilder(Page):
     def update_deck_summary(self):
         pass
 
-    def update_decks(self):
-        global deck_dictionary
-        deck_dictionary = import_decks()
-
     def update_cards(self):
         if card_manager.get_changes():
             for group, contents in self.color_groups.items():
@@ -291,56 +286,22 @@ class DeckBuilder(Page):
         self.top_row.sprites = display_cards[:5]
         self.bottom_row.sprites = display_cards[5:]
 
-        if self.decks[0]:
-            # Make card sprites in deck contents match card names
-            stats_cards = ['AttackStat', 'HealthStat']
-            for c in self.decks[0].contents:
-                if c.name not in self.decks[0].card_names and c.name not in stats_cards:
-                    self.decks[0].contents.remove(c)
-            current_names = [c.name for c in self.decks[0].contents]
+        if False:
+            if self.decks[0]:
+                # Make card sprites in deck contents match card names
+                stats_cards = ['AttackStat', 'HealthStat']
+                for c in self.decks[0].contents:
+                    if c.name not in self.decks[0].card_names and c.name not in stats_cards:
+                        self.decks[0].contents.remove(c)
+                current_names = [c.name for c in self.decks[0].contents]
 
-            for name in self.decks[0].card_names + stats_cards:
-                if name not in current_names:
-                    new = card_manager.load_card(name)
-                    new.size = 'summary'
-                    new.is_static = True
-                    new.resize()
-                    self.decks[0].contents.append(new)
-
-            # Update Card Quantities
-            card_quantities = {x: self.decks[0].card_names.count(x) for x in set(self.decks[0].card_names + stats_cards)}
-            for c in self.decks[0].contents:
-                try:
-                    c.quantity = card_quantities[c.name]
-                except KeyError:
-                    print('Key Error when Updating Card Quantities:', c.name, self.decks[0].contents, card_quantities)
-
-            self.decks[0].contents.sort(key=lambda x: x.name)
-            self.decks[0].contents.sort(key=lambda x: x.cost)
-
-            # Sort cards into display groups
-            stat_cards = [c for c in self.decks[0].contents if c.type == 'Stats']
-            stat_cards.sort(key=lambda x: x.name)
-            star_cards = [c for c in self.decks[0].contents if 'Star' in c.special and c.type != 'Stats']
-            other_cards = [c for c in self.decks[0].contents if c not in (stat_cards + star_cards)]
-            stat_card_display = [self.stats_label] + stat_cards if USE_DECK_STATS else []
-
-            # Update deck display
-            self.deck_summary.sprites = (
-                [self.decks[0]] +
-                stat_card_display +
-                [self.star_label] + star_cards +
-                [self.deck_label] + other_cards
-            )
-            self.decks[0].update_text()
-
-        else:
-            self.deck_summary.sprites = []
-
-        # Resize deck image
-        self.decks[0].w = 300
-        self.decks[0].h = 100
-        self.decks[0].show_card_count = True
+                for name in self.decks[0].card_names + stats_cards:
+                    if name not in current_names:
+                        new = card_manager.load_card(name)
+                        new.size = 'summary'
+                        new.is_static = True
+                        new.resize()
+                        self.decks[0].contents.append(new)
 
         for g in self.groups:
             g.align(window)

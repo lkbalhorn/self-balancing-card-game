@@ -211,6 +211,7 @@ class Deck(Location):
         self.template_filename = 'deck_icon_background.png'
         self.card_names = []
         self.extra_card_names = []
+        self.deck_list_id = None
 
         self.average_mana = 0
         self.total_handicap = 0
@@ -237,6 +238,7 @@ class Deck(Location):
             for key in self.__dict__:
                 if key in data.__dict__:
                     setattr(self, key, getattr(data, key))
+            self.deck_list_id = data.id
 
     def update_text(self):
         star_cards = [c for c in self.contents if 'Star' in c.special]
@@ -448,7 +450,7 @@ class DeckManager:
     def clean(self):
         """Ensures object has minimum data to function"""
         if not self.decks:
-            self.decks['default'] = DeckList()
+            self.new_deck()
         if len(self.chosen_decks) != 2:
             self.chosen_keys= ['temp', 'temp']
             self.chosen_decks = ['temp', 'temp']
@@ -468,7 +470,8 @@ class DeckManager:
             if str(i) not in self.decks:
                 new.id = str(i)
                 self.decks[new.id] = new
-                self.select_deck(new.id)
+                break
+        return new
 
     def delete_deck(self, deck_id):
         self.decks.pop(deck_id)
