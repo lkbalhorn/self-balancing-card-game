@@ -138,8 +138,7 @@ class DeckBuilder(Page):
         super().__init__(name, host, parent, background, groups=[])
 
         self.current_mode = 'idle'
-        self.loop_counter = 0
-        self.decks = self.host.dm.decks
+        self.current_deck = self.host.dm.chosen_decks[0]
         self.set = 2  # Cards at or below set 2 are visible in the DeckBuilder
 
         # Create Card Objects
@@ -183,18 +182,19 @@ class DeckBuilder(Page):
             self.left_buttons.sprites.append(new)
 
         # Create Card List
-        # self.card_list = Group('card_list', self, [], 0, 1, -25, 1, 1, 0, low=100, spacing=1)
+        self.card_list = Group('card_list', self, [], 0, 1, -25, 1, 1, 0, low=100, spacing=1)
 
         # Create Deck Summary Area ------------------------------------------------------
         self.deck_background = Sprite(layer=-5, w=300, h=750, name='DeckBackground')
         self.deck_background_group = Group('deck_background', self, [self.deck_background],
                                            0, 1, -5, 1, 1, 0, low=5, spacing=1)
 
-        # self.deck_image = Deck(data=self.decks[0])
-        # self.deck_summary = Group('deck_summary', self, [self.deck_image],
-        #                                0, 1, -5, 1, 1, 0, low=5, spacing=1)
-        # self.deck_image.w = 300
-        # self.deck_image.h = 100
+        self.deck_image = Deck(data=self.current_deck)
+        self.deck_image.is_text_box = True
+        self.deck_summary = Group('deck_summary', self, [self.deck_image],
+                                       0, 1, -5, 1, 1, 0, low=5, spacing=1)
+        self.deck_image.w = 300
+        self.deck_image.h = 100
 
         # Create sublabels for deck summary
         self.stats_label = Sprite(w=300, h=45, text='Stats', font_size=30)
@@ -202,7 +202,6 @@ class DeckBuilder(Page):
         self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
 
     def sort_display_cards(self):
-        #
         # Sort Cards by Mana Cost first, Name second
         for key in self.color_groups:
             self.color_groups[key].sort(key=lambda x: x.name)
@@ -210,7 +209,6 @@ class DeckBuilder(Page):
 
     def special_inputs(self, events, hovered_ids, pos, mouse):
         hovered_sprites = [i for i in self.view() if i.id in hovered_ids]
-        # self.decks[0].is_text_box = True
 
         for e in events:
             if e.type == pygame.KEYDOWN:
@@ -228,37 +226,29 @@ class DeckBuilder(Page):
             if e.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for c in hovered_sprites:
                     if c.name == 'New Deck':
-                        # First save current deck
-                        new = Deck(player=None)
-                        self.decks[0] = new
-                        self.update_deck_summary()
+                        self.current_deck = self.host.dm.new_deck()
                     elif c.name == 'Load Deck':
                         self.host.set_page(self.host.deck_chooser.name, come_back=True)
                         self.host.deck_chooser.active_position = 0  # First deck being chosen
-                    # elif self.decks[0]:
-                    if False:
-                        if c.name == 'Save Deck':
-                            self.decks[0].save()
-                            self.host.pages['Deck Chooser'].update_decks()
-                            deck_dictionary = import_decks()
-                        elif c.name == 'Clear Deck':
-                            if self.decks[0]:
-                                self.decks[0].card_names = []
-                        elif c.name == 'Cancel Changes':
-                            # Reload current deck
-                            self.host.dm.load()
-                        elif c.name == 'Delete Deck':
-                            self.host.chosen_values['Decks'][0].save(delete=True)
-                            self.host.chosen_values['Decks'][0] = get_recent_decks()[-1]
-                            self.host.pages['Deck Chooser'].update_decks()
-                            self.update_deck_summary()
-                            deck_dictionary = import_decks()
-                        elif c.is_card and self.decks[0]:
-                            if c.size == 'big':
-                                self.decks[0].card_names.append(c.name)
-                            elif c.size == 'summary':
-                                if c.name in self.decks[0].card_names:
-                                    self.decks[0].card_names.remove(c.name)
+                        self.deck_image = Deck(data=self.host.dm.chosen_decks[0])
+                    elif c.name == 'Save Deck':
+                        self.host.dm.save()
+                    elif c.name == 'Clear Deck':
+                        self.current_deck.cards = {}
+                    elif c.name == 'Cancel Changes':
+                        self.host.dm.load()
+                    elif c.name == 'Delete Deck':
+                        self.host.dm.delete_deck(self.current_deck.id)
+                        self.current_deck = self.host.dm.chosen_decks[0]
+                    elif c.is_card:
+                        if c.size == 'big':
+                            self.current_deck.add_card(c.name)
+                        elif c.size == 'summary':
+                            self.current_deck.remove_card(c.name)
+
+        # Use text box to update deck name
+        if not self.deck_image.is_toggle:
+            self.current_deck.name = self.deck_image.text
 
     def enter(self, _):
         card_manager.get_changes()

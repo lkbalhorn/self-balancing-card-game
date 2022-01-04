@@ -413,7 +413,7 @@ class DeckManager:
     def to_dict(self):
         """Returns serializable dictionary with all data needed to reconstruct this object"""
         new = {}
-        for key, value in self.__dict__.values():
+        for key, value in self.__dict__.items():
             if key in ['path', 'decks', 'chosen_decks']:
                 continue
             else:
@@ -445,17 +445,26 @@ class DeckManager:
         except OSError:
             # File doesn't exist - keep defaults
             pass
+        except json.decoder.JSONDecodeError:
+            # File Corrupted - keep defaults
+            pass
+
+        # Remove Corrupted Keys
+        corrupted = [key for key, value in self.decks.items() if type(value) != DeckList]
+        for key in corrupted:
+            self.decks.pop(key)
+
         self.clean()
 
     def clean(self):
         """Ensures object has minimum data to function"""
-        if not self.decks:
-            self.new_deck()
         if len(self.chosen_decks) != 2:
             self.chosen_keys= ['temp', 'temp']
             self.chosen_decks = ['temp', 'temp']
+        if not self.decks:
+            self.new_deck()
         for i, value in enumerate(self.chosen_keys):
-            if value not in self.decks:
+            if value not in self.decks.values():
                 new_key = list(self.decks.keys())[0]
                 self.chosen_keys[i] = new_key
                 self.chosen_decks[i] = self.decks[new_key]
@@ -471,6 +480,7 @@ class DeckManager:
                 new.id = str(i)
                 self.decks[new.id] = new
                 break
+        self.select_deck(new.id)
         return new
 
     def delete_deck(self, deck_id):
