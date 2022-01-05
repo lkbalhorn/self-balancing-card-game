@@ -245,16 +245,18 @@ class Deck(Location):
         self.text = self.name
 
     def update_text(self):
-        star_cards = [c for c in self.contents if 'Star' in c.special]
-        deck_cards = [c for c in self.contents if 'Star' not in c.special]
+        if False:
+            # Update later with new star card protocol
+            star_cards = []
+            deck_cards = [c for c in self.contents]
 
-        self.n_deck_cards = sum([c.quantity for c in deck_cards])
-        if self.n_deck_cards > 0:
-            self.average_mana = sum(c.cost * c.quantity for c in deck_cards) / self.n_deck_cards
-        else:
-            self.average_mana = 0
-        self.total_handicap = sum(c.handicap * c.quantity for c in self.contents)
-        self.n_start_cards = 5 - (self.total_handicap - 150) / 20
+            self.n_deck_cards = sum([c.quantity for c in deck_cards])
+            if self.n_deck_cards > 0:
+                self.average_mana = sum(c.cost * c.quantity for c in deck_cards) / self.n_deck_cards
+            else:
+                self.average_mana = 0
+            self.total_handicap = sum(c.handicap * c.quantity for c in self.contents)
+            self.n_start_cards = 5 - (self.total_handicap - 150) / 20
 
     def draw_image(self, artwork=False, template=False, extras=[]):
         # Update Text

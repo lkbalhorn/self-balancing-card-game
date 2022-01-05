@@ -137,7 +137,6 @@ class DeckBuilder(Page):
     def __init__(self, name, host, parent, background, groups=[]):
         super().__init__(name, host, parent, background, groups=[])
 
-        self.current_mode = 'idle'
         self.current_deck = self.host.dm.chosen_decks[0]
         self.set = 2  # Cards at or below set 2 are visible in the DeckBuilder
 
@@ -182,7 +181,7 @@ class DeckBuilder(Page):
             self.left_buttons.sprites.append(new)
 
         # Create Card List
-        self.card_list = Group('card_list', self, [], 0, 1, -25, 1, 1, 0, low=100, spacing=1)
+        self.card_list = Group('card_list', self, [], 0, 1, -5, 1, 1, 0, low=110, spacing=1)
 
         # Create Deck Summary Area ------------------------------------------------------
         self.deck_background = Sprite(layer=-5, w=300, h=750, name='DeckBackground')
@@ -279,22 +278,22 @@ class DeckBuilder(Page):
         self.top_row.sprites = display_cards[:5]
         self.bottom_row.sprites = display_cards[5:]
 
-        if False:
-            if self.decks[0]:
-                # Make card sprites in deck contents match card names
-                stats_cards = ['AttackStat', 'HealthStat']
-                for c in self.decks[0].contents:
-                    if c.name not in self.decks[0].card_names and c.name not in stats_cards:
-                        self.decks[0].contents.remove(c)
-                current_names = [c.name for c in self.decks[0].contents]
+        # Make card sprites in deck contents match card names
+        current_names = [c.name for c in self.card_list.sprites]
+        for name, quantity in self.current_deck.cards.items():
+            if name not in current_names:
+                new = card_manager.load_card(name)
+                new.size = 'summary'
+                new.is_static = True
+                new.resize()
+                self.card_list.sprites.append(new)
+        for s in self.card_list.sprites:
+            if s.name not in self.current_deck.cards:
+                self.card_list.sprites.remove(s)
+            else:
+                s.quantity = self.current_deck.cards[s.name]
 
-                for name in self.decks[0].card_names + stats_cards:
-                    if name not in current_names:
-                        new = card_manager.load_card(name)
-                        new.size = 'summary'
-                        new.is_static = True
-                        new.resize()
-                        self.decks[0].contents.append(new)
+        self.card_list.sprites.sort(key=lambda x: x.cost)
 
         for g in self.groups:
             g.align(window)
