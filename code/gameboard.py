@@ -459,6 +459,12 @@ class DeckManager:
 
         self.clean()
 
+        # Select most recently accessed deck
+        decks = list(self.decks.values())
+        decks.sort(key=lambda d: d.last_accessed, reverse=True)
+        self.select_deck(decks[1].id, position=1)
+        self.select_deck(decks[0].id)
+
     def clean(self):
         """Ensures object has minimum data to function"""
         if len(self.chosen_decks) != 2:
@@ -475,6 +481,9 @@ class DeckManager:
     def select_deck(self, deck_id, position=0):
         self.chosen_keys[position] = deck_id
         self.chosen_decks[position] = self.decks[deck_id]
+        if position == 0:
+            self.decks[deck_id].last_accessed = time.time()
+            self.save()
 
     def new_deck(self):
         new = DeckList()
