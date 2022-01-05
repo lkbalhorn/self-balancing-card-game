@@ -234,11 +234,15 @@ class Deck(Location):
         self.font_color = (200, 200, 255)
 
         if data:
-            self.contents = data.get_card_list()
-            for key in self.__dict__:
-                if key in data.__dict__:
-                    setattr(self, key, getattr(data, key))
-            self.deck_list_id = data.id
+            self.change_data(data)
+
+    def change_data(self, data):
+        self.contents = data.get_card_list()
+        for key in self.__dict__:
+            if key in data.__dict__:
+                setattr(self, key, getattr(data, key))
+        self.deck_list_id = data.id
+        self.text = self.name
 
     def update_text(self):
         star_cards = [c for c in self.contents if 'Star' in c.special]
@@ -379,6 +383,7 @@ class DeckList:
             except KeyError:
                 # Keep default value
                 pass
+        return self
 
     def add_card(self, name):
         if name in self.cards:
@@ -428,8 +433,9 @@ class DeckManager:
                 continue
             else:
                 self.__setattr__(key, value)
-        self.decks = {name: DeckList().from_dict(data) for name, data in data['decks'].items()}
+        self.decks = {key: DeckList().from_dict(value) for key, value in data['decks'].items()}
         self.chosen_decks = [self.decks[key] for key in self.chosen_keys]
+        print(self.decks)
 
     def save(self):
         """"Saves data needed to reconstruct this object to disk"""
@@ -444,9 +450,6 @@ class DeckManager:
             self.from_dict(raw_data)
         except OSError:
             # File doesn't exist - keep defaults
-            pass
-        except json.decoder.JSONDecodeError:
-            # File Corrupted - keep defaults
             pass
 
         # Remove Corrupted Keys
@@ -475,12 +478,13 @@ class DeckManager:
 
     def new_deck(self):
         new = DeckList()
-        for i in range(10000):
+        for i in range(1, 10000):
             if str(i) not in self.decks:
                 new.id = str(i)
                 self.decks[new.id] = new
                 break
         self.select_deck(new.id)
+        new.name = 'New Deck %s' % new.id
         return new
 
     def delete_deck(self, deck_id):

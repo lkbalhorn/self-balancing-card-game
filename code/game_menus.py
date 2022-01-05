@@ -12,7 +12,7 @@ class MainMenu(Menu):
         title_filename = 'main title 4.jpg'
         background_filename = 'Island in a Bottle TEMP cropped.jpg'
         game_background_filename = 'Huangshan_Valley.jpg'
-        self.dm = DeckManager('deck_data.txt')
+        self.dm = DeckManager('../data/deck_data.txt')
         self.deck_chooser = DeckChooser('Deck Chooser', self, 'main', background_filename)
         self.game_screen = GameScreen('Game Screen', self, 'main', game_background_filename)
         self.deck_builder = DeckBuilder('Deck Builder', self, 'main', background_filename)
@@ -226,11 +226,10 @@ class DeckBuilder(Page):
             if e.type == pygame.MOUSEBUTTONUP:  # Unclick
                 for c in hovered_sprites:
                     if c.name == 'New Deck':
-                        self.current_deck = self.host.dm.new_deck()
+                        self.host.dm.new_deck()
                     elif c.name == 'Load Deck':
                         self.host.set_page(self.host.deck_chooser.name, come_back=True)
                         self.host.deck_chooser.active_position = 0  # First deck being chosen
-                        self.deck_image = Deck(data=self.host.dm.chosen_decks[0])
                     elif c.name == 'Save Deck':
                         self.host.dm.save()
                     elif c.name == 'Clear Deck':
@@ -239,12 +238,16 @@ class DeckBuilder(Page):
                         self.host.dm.load()
                     elif c.name == 'Delete Deck':
                         self.host.dm.delete_deck(self.current_deck.id)
-                        self.current_deck = self.host.dm.chosen_decks[0]
                     elif c.is_card:
                         if c.size == 'big':
                             self.current_deck.add_card(c.name)
                         elif c.size == 'summary':
                             self.current_deck.remove_card(c.name)
+
+        # If deck has changed, update name
+        if self.current_deck !=  self.host.dm.chosen_decks[0]:
+            self.current_deck = self.host.dm.chosen_decks[0]
+            self.deck_image.change_data(self.current_deck)
 
         # Use text box to update deck name
         if not self.deck_image.is_toggle:
