@@ -127,7 +127,7 @@ class Game:
         for i, p in enumerate(self.players):
             # p.deck = decks[i]
             new_deck = decks[i]
-            card_names = new_deck.card_names if hasattr(new_deck, 'card_names') else new_deck
+            card_names = new_deck.get_card_list()
             for name in card_names:
                 new = card_manager.load_card(name, p)
                 p.deck.append(new)
