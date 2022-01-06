@@ -38,6 +38,7 @@ class Card(sprite.Sprite):
         self.ability_cost = None
         self.type = False
         self.special = []
+        self.intrinsic = False
         self.tags = []
         self.handicap = 0
         self.priority = 0
@@ -83,7 +84,7 @@ class Card(sprite.Sprite):
                            'location', 'color', 'handicap',
                            'attack', 'health', 'cost', 'ability_cost', 'special_text', 'space',
                            'name', 'long_name', 'filename',
-                           'n_hand_targets', 'n_board_targets', 'special', 'tags'
+                           'n_hand_targets', 'n_board_targets', 'special', 'intrinsic', 'tags'
                            ]
         self.color = (0, 0, 0)
         self.special_text = False

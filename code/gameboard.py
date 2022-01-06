@@ -237,26 +237,33 @@ class Deck(Location):
             self.change_data(data)
 
     def change_data(self, data):
-        self.contents = data.get_card_list()
+        self.contents = [card_manager.load_card(c,False) for c in data.get_card_list()]
         for key in self.__dict__:
             if key in data.__dict__:
                 setattr(self, key, getattr(data, key))
         self.deck_list_id = data.id
         self.text = self.name
 
-    def update_text(self):
-        if False:
-            # Update later with new star card protocol
-            star_cards = []
-            deck_cards = [c for c in self.contents]
+    def cards_where(self, **kwargs):
+        """Returns list of cards that meet the given conditions"""
+        partial_list = list(self.contents)
+        for key, value in kwargs.items():
+            partial_list = [i for i in partial_list if hasattr(i, key)]
+            partial_list = [i for i in partial_list if getattr(i, key) == value]
+        return partial_list
 
-            self.n_deck_cards = sum([c.quantity for c in deck_cards])
-            if self.n_deck_cards > 0:
-                self.average_mana = sum(c.cost * c.quantity for c in deck_cards) / self.n_deck_cards
-            else:
-                self.average_mana = 0
-            self.total_handicap = sum(c.handicap * c.quantity for c in self.contents)
-            self.n_start_cards = 5 - (self.total_handicap - 150) / 20
+    def update_text(self):
+        # Update later with new star card protocol
+        intrinsic = self.cards_where(intrinsic=True)
+        deck_cards = self.cards_where(intrinsic=False)
+
+        self.n_deck_cards = sum([c.quantity for c in deck_cards])
+        if self.n_deck_cards > 0:
+            self.average_mana = sum(c.cost * c.quantity for c in deck_cards) / self.n_deck_cards
+        else:
+            self.average_mana = 0
+        self.total_handicap = sum(c.handicap * c.quantity for c in self.contents)
+        self.n_start_cards = 5 - (self.total_handicap - 150) / 20
 
     def draw_image(self, artwork=False, template=False, extras=[]):
         # Update Text

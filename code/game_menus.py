@@ -195,11 +195,6 @@ class DeckBuilder(Page):
         self.deck_image.w = 300
         self.deck_image.h = 100
 
-        # Create sublabels for deck summary
-        self.stats_label = Sprite(w=300, h=45, text='Stats', font_size=30)
-        self.star_label = Sprite(w=300, h=45, text='Head Start', font_size=30)
-        self.deck_label = Sprite(w=300, h=45, text='Deck', font_size=30)
-
     def sort_display_cards(self):
         # Sort Cards by Mana Cost first, Name second
         for key in self.color_groups:
@@ -242,9 +237,11 @@ class DeckBuilder(Page):
                             self.current_deck.add_card(c.name)
                         elif c.size == 'summary':
                             self.current_deck.remove_card(c.name)
+                        self.deck_image.change_data(self.host.dm.chosen_decks[0])
+                        self.deck_image.update_text()
 
         # If deck has changed, update name
-        if self.current_deck !=  self.host.dm.chosen_decks[0]:
+        if self.current_deck != self.host.dm.chosen_decks[0]:
             self.current_deck = self.host.dm.chosen_decks[0]
             self.deck_image.change_data(self.current_deck)
 
